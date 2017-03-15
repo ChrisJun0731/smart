@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<span > From Smart CRM</span>
+<p>
+    <span>send company:</span><span th:text="${sendCompany}"></span>
+</p>
+<p>
+    <span>send user:</span><span th:text="${sendUser}"></span>
+</p>
+<p>
+    <span th:text="${des}"></span>
+</p>
+<p>
+    <table>
+        <tr>
+            <th>cusip</th>
+            <th>side</th>
+            <th>quantity</th>
+            <th>price</th>
+        </tr>
+        <tr th:each="match: ${matchList}">
+            <td th:text="${match.cusip}"></td>
+            <td th:text="${match.side}"></td>
+            <td th:text="${match.quantity}"></td>
+            <td th:text="${match.price}"></td>
+        </tr>
+    </table>
+</p>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<header th:replace="common-header :: commonheader"></header>
+<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+<body class="hold-transition layout-top-nav skin-purple" ng-class="{'sidebar-mini sidebar-collapse':hasSide}">
+<div class="wrapper">
+
+    <!--<div th:replace="header :: toolbar"></div>-->
+    <div ui-view="header"></div>
+
+    <!-- Full Width Column -->
+    <div class="content-wrapper" ui-view="container" style="min-height: 800px">
+
+
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <div ui-view="footer"></div>
+</div>
+<!-- ./wrapper -->
+<script src="/public/plugins/require/require.js" data-main="/public/dist/js/require-config"></script>
+
+</body>
+</html>

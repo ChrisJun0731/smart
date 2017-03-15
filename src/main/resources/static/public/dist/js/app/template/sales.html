@@ -1,0 +1,421 @@
+<!-- Content Header (Page header) -->
+<section class="content-header" xmlns:fa-plus="http://www.w3.org/1999/xhtml">
+    <h1>
+        <small>Trade List</small>
+    </h1>
+
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <small class="box-title" style="font-size: 80%">
+
+                    </small>
+
+                    <div class="box-tools pull-right">
+                        <div class="btn-group">
+                            <input type="text" class="form-control input-sm" placeholder="Search Sales">
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                        </div>
+                        <div class="btn-group" uib-dropdown>
+                            <button id="single-button" type="button" class="btn btn-success"  uib-dropdown-toggle><i class="fa fa-plus"></i></button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                <li role="menuitem"><a href="" ng-click="openSaleModal({})">Add Sale</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="" ng-click="openUploadModal('lg')">Import From File</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="" ng-click="openUploadModal('lg')">Invalid Data</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="/common/download?filename=trade-feed.csv" >Download Sales Template</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <div class="mailbox-controls">
+                        <!-- Check all button -->
+                        <button type="button" class="btn btn-default btn-sm checkbox-toggle" ng-click="selectAllSales()" ng-init="saleSelected=false">
+                            <i ng-class='{"fa fa-square-o":saleSelected==false,"fa fa-check-square-o":saleSelected==true}'></i>
+                        </button>
+                        <div class="btn-group">
+                            <a ng-click="downloadSelInfo()" download="download.csv" ng-href="{{downloadHref}}">
+                                <button type="button" class="btn btn-default btn-sm"><i class="fa fa-download"></i></button>
+                            </a>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>
+                        </div>
+                        <!-- /.btn-group -->
+                        <button type="button" class="btn btn-default btn-sm" ng-click="refresh(page)"><i class="fa fa-refresh"></i></button>
+                        <div class="pull-right">
+                            {{start}}-{{end}}/{{maxSize}}
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="prePage()"><i class="fa fa-chevron-left"></i></button>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="nextPage()"><i class="fa fa-chevron-right"></i></button>
+                            </div>
+                            <!-- /.btn-group -->
+                        </div>
+                        <!-- /.pull-right -->
+                    </div>
+                    <div class="box-body">
+
+                        <table class="table">
+                            <tbody><tr>
+                                <th style="width: 10px">#</th>
+                                <th style="width: 10px"></th>
+                                <th>SecId</th>
+                                <th>Side</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Book</th>
+                                <th>Account</th>
+                                <th>Sales</th>
+                                <th>Trade Time</th>
+                                <!--<th style="width: 40px">Status</th>-->
+                            </tr>
+
+                            <tr ng-repeat="sale in saleList">
+                                <td><input type="checkbox" ng-checked="sale.selected"/></td>
+                                <td class="mailbox-star"><a href="#"><i class="fa fa-star-o text-yellow"></i></a></td>
+                                <td>{{ sale.secId }}</td>
+                                <td>{{ sale.buySell == 'B' ? 'Buy' : 'Sell' }}</td>
+                                <td ng-bind="sale.netPrice">
+                                </td>
+                                <td ng-bind="sale.quantity">
+                                </td>
+                                <td ng-bind="sale.traderInitials">
+                                </td>
+                                <td ng-bind="sale.accountName">
+                                </td>
+                                <td ng-bind="sale.traderName">
+                                </td>
+                                <td>
+                                    {{sale.tradeDate | amDateFormat:'YYYY-MM-DD HH:mm:ss'}}
+                                </td>
+                                <!--<td><span class="badge bg-green">finished</span></td>-->
+                            </tr>
+                            </tbody></table>
+
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer no-padding">
+
+                    </div>
+                </div>
+                <!-- /. box -->
+            </div>
+
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Filter</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" ng-click="isFilterCollapsed=!isFilterCollapsed" ng-init="isFilterCollapsed=true">
+                            <i ng-class='{"fa fa-plus": isFilterCollapsed==true, "fa fa-minus": isFilterCollapsed==false}'></i>
+                        </button>
+                    </div>
+                </div>
+                <div uib-collapse="isFilterCollapsed">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><input type="checkbox" value="" name=""> recent view<span class="label label-warning pull-right">100+</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> shared <span class="label label-warning pull-right">65</span></a>
+                        </li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> star<span class="label label-warning pull-right">35</span></a></li>
+                        <li>
+                            <a href="#"><i class="fa fa-circle-o"></i> Status<i class="fa fa-angle-left pull-right"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /. box -->
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Sort</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" ng-click="isSortCollapsed=!isSortCollapsed" ng-init="isSortCollapsed=true">
+                            <i ng-class='{"fa fa-plus": isSortCollapsed==true,"fa fa-minus": isSortCollapsed==false}'></i>
+                        </button>
+                    </div>
+                </div>
+                <div uib-collapse="isSortCollapsed">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a ng-click="getSortedList('secId')" ng-init="idOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': idOrder=='asc','fa fa-sort-desc text-light-blue': idOrder=='desc'}"></i> Info
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="getSortedList('settleDate')" ng-init="dateOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': dateOrder=='asc','fa fa-sort-desc text-light-blue': dateOrder=='desc'}"></i> TradeTime
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="getSortedList('quantity')" ng-init="qtyOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': qtyOrder=='asc','fa fa-sort-desc text-light-blue': qtyOrder=='desc'}"></i> Qty
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="getSortedList('netPrice')" ng-init="priceOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': priceOrder=='asc','fa fa-sort-desc text-light-blue': priceOrder=='desc'}"></i> Price
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->
+
+<!--Modal -->
+<script type="text/ng-template" id="saleCreator.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Sale</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">traderInitials</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="traderInitials" ng-model="info.traderInitials">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">cusip</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="cusip" ng-model="info.cusip">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">secId</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="secId" ng-model="info.secId">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Side</label>
+
+                    <div class="col-sm-8">
+                        <label class="radio-inline">
+                            <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="B" ng-model="info.buySell"> Buy
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="S" ng-model="info.buySell"> Sell
+                        </label>
+                        <!--<input type="text" class="form-control" placeholder="side" >-->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">quantity</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="quantity" ng-model="info.quantity">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">netPrice</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="netPrice" ng-model="info.netPrice">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">netYield</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="netYield" ng-model="info.netYield">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">tradeDate</label>
+
+                    <div class="col-sm-8">
+                        <!--<input type="text" class="form-control" placeholder="tradeDate" ng-model="info.tradeDate">-->
+                        <p class="input-group">
+                            <input type="text" class="form-control" ng-model="info.tradeDate" uib-datepicker-popup is-open="popup2.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                          <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+                          </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">settleDate</label>
+
+                    <div class="col-sm-8">
+                        <!--<input type="text" class="form-control" placeholder="settleDate" ng-model="info.settleDate">-->
+                        <p class="input-group">
+                            <input type="text" class="form-control" ng-model="info.settleDate" uib-datepicker-popup is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                          <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+                          </span>
+                        </p>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">brokerInitials</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="brokerInitials" ng-model="info.brokerInitials">
+                    </div>
+                </div>
+                <!--TODO to select-->
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">ecnSource</label>
+
+                    <div class="col-sm-8">
+                        <!--<input type="text" class="form-control" placeholder="ecnSource" ng-model="info.ecnSource">-->
+                        <select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="info.ecnSource">
+                            <option ng-repeat="option in sources" value="{{option.value}}">{{option.text}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">oppTrader</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="oppTrader" ng-model="info.oppTrader">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">salesId</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="salesId" ng-model="info.salesId">
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Save</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<!--File upload Modal -->
+<script type="text/ng-template" id="fileUpload.html">
+    <div class="modal-header">
+        <h3 class="modal-title">File Upload</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <h4>Select files</h4>
+
+                <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                <!--Multiple-->
+                <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
+
+                <!--Single-->
+                <!--<input type="file" nv-file-select="" uploader="uploader" />-->
+                <!--<h4>Status</h4>-->
+                <!--<div class="btn-group">-->
+                    <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>-->
+                    <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>-->
+                <!--</div>-->
+            </div>
+
+            <div class="col-md-9" style="margin-bottom: 40px">
+
+                <h3>Upload queue</h3>
+                <p>Queue length: {{ uploader.queue.length }}</p>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="50%">Name</th>
+                        <th ng-show="uploader.isHTML5">Size</th>
+                        <th ng-show="uploader.isHTML5">Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in uploader.queue">
+                        <td><strong>{{ item.file.name }}</strong></td>
+                        <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                        <td ng-show="uploader.isHTML5">
+                            <div class="progress" style="margin-bottom: 0;">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                            <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                            <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        </td>
+                        <td nowrap>
+                            <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                <span class="glyphicon glyphicon-upload"></span> Upload
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                            </button>
+                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                <span class="glyphicon glyphicon-trash"></span> Remove
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <div>
+                        Queue progress:
+                        <div class="progress" style="">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                        <span class="glyphicon glyphicon-upload"></span> Upload all
+                    </button>
+                    <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+                    </button>
+                    <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                        <span class="glyphicon glyphicon-trash"></span> Remove all
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>

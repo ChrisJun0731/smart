@@ -1,0 +1,95 @@
+package com.sumridge.smart.controller;
+
+import com.sumridge.smart.bean.ResultBean;
+import com.sumridge.smart.entity.SaleBean;
+import com.sumridge.smart.domain.CurrentUser;
+import com.sumridge.smart.service.SaleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
+/**
+ * Created by liu on 16/5/12.
+ */
+@RestController
+@RequestMapping("/sale")
+public class SaleController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SaleController.class);
+    @Autowired
+    private SaleService saleService;
+    @RequestMapping(value = "/list")
+    public ResultBean getAccountList(Authentication authentication) {
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            ResultBean rs = saleService.getSaleList(user.getUserInfo());
+            return rs;
+        } else {
+            return new ResultBean();
+        }
+    }
+
+    @RequestMapping(value = "/recent")
+    public ResultBean getRecentList(Authentication authentication) {
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            ResultBean rs = saleService.getRecentList(user.getUserInfo());
+            return rs;
+        } else {
+            return new ResultBean();
+        }
+    }
+
+    @RequestMapping(value = "/percent")
+    public ResultBean getSalePercent(Authentication authentication) {
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            ResultBean rs = saleService.getSalePercent(user.getUserInfo());
+            return rs;
+        } else {
+            return new ResultBean();
+        }
+    }
+
+    @RequestMapping(value = "/info", method = RequestMethod.POST)
+    public ResultBean saveTeam(Authentication authentication, @RequestBody SaleBean bean) {
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            return saleService.saveInfo(bean,user.getUserInfo());
+
+        } else {
+            return new ResultBean();
+        }
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/upload")
+    public ResultBean uploadFile(Authentication authentication, @RequestParam("file") MultipartFile file) {
+        LOGGER.info("file:"+file.getName()+"/"+file.getContentType()+"/"+file.getOriginalFilename()+"/"+file.getSize());
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            ResultBean rs = saleService.saveFile(user.getUserInfo(), file);
+            return rs;
+        } else {
+            return new ResultBean();
+        }
+    }
+
+    //add by zj
+    @RequestMapping("/page")
+    public ResultBean loadPagedSales(Authentication authentication, @RequestParam("currentPage")String currentPage, @RequestParam("pageSize")String pageSize){
+        CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        if (user != null) {
+            ResultBean rs = saleService.loadPagedSales(Integer.parseInt(currentPage), Integer.parseInt(pageSize));
+            return rs;
+        }
+        else
+            return new ResultBean();
+    }
+
+}

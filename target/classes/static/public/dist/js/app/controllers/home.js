@@ -1,0 +1,211 @@
+define(['jquery','angular','angular-sanitize','markdown','../services/UserService.js'], function () {
+	// controller
+	return ["$scope",'UserService','$uibModal','$sce', '$compile', function ($scope, userService, $uibModal, $sce, $compile) {
+		// properties
+	    $scope.board = {};
+        $scope.topList = [];
+        $scope.messageContent = "";
+        $scope.messageList = [];
+        $scope.messageType = "common";
+        $scope.fileList = [];
+        $scope.commentConfig = {};
+        $scope.choices = [];
+
+        //store the dataURL of photos add by zj 02/16
+        $scope.dataUrlArr = [];
+        $scope.uploaded = 0;
+
+        userService.loadHome().then(function(rs){
+            console.log(rs);
+            if(rs.success) {
+                $scope.board = rs.data;
+            }
+            return userService.loadTop();
+        }).then(function(rs){
+            console.log(rs);
+            if(rs.success) {
+                $scope.topList = rs.data;
+            }
+            return userService.loadHomeMessage();
+        }).then(function(rs){
+            console.log(rs);
+            if(rs.success) {
+                $scope.messageList = rs.data;
+                angular.forEach($scope.messageList, function(msg, index){
+                    if(msg.messageType != "note"){
+                        msg.content = JSON.parse(msg.content);
+                    }
+                });
+            }
+            return userService.loadTopFile({params:{id:$scope.board.id}});
+        }).then(function(rs){
+            console.log(rs);
+            if(rs.success) {
+                $scope.fileList = rs.data;
+            }
+        }).then(function(){
+            return userService.list();
+        }).then(function(rs){
+            if(rs.success){
+                var userInfos = [];
+                var userList = rs.data;
+                userList.forEach(function(ele, ind){
+                    var accounts = ele.accounts;
+                    userInfos = userInfos.concat(accounts);
+                });
+                userInfos.forEach(function(ele, ind){
+                    ele.first = ele.firstName;
+                    ele.last = ele.lastName;
+                    delete ele.firstName;
+                    delete ele.lastName;
+                });
+                $scope.choices = userInfos;
+            }
+        });
+
+        //post message
+        $scope.sendMessage = function(){
+            if($scope.richTextFlag){
+                $scope.messageContent = $scope.richText;
+            }
+            else{
+                var imgStr = '<div>';
+                angular.forEach($scope.dataUrlArr,function(obj){
+                    imgStr += '<img src="' + obj.url + '" ng-click="enlarge($event)"/>';
+                })
+                imgStr += '</div>';
+                $scope.messageContent = '<div>' + $scope.messageContent;
+                $scope.messageContent += imgStr + '</div>';
+            }
+            userService.postMessage({"boardId":$scope.board.id,"messageContent":$scope.messageContent,"messageType":$scope.messageType}).then(function(rs){
+                $scope.messageContent = "";
+                $scope.closePhotoTip();
+            });
+        };
+        //var unbindHandler =
+        $scope.$on("messageAdded",function(evt, data){
+            console.log("fetch message now!");
+            console.log(data);
+            $scope.messageList.splice(0,0,data);
+        });
+
+        //$scope.$on('$destroy', function(){
+        //   console.log("home destroy");
+        //    unbindHandler();
+        //    unbindHandler = null;
+        //});
+
+        //remove msg add by zj 2016/11/22
+        $scope.removeMsg = function(index, id){
+            var config = {params:{id:id}};
+            $scope.messageList.splice(index,1);
+            userService.removeMsg(config);
+        };
+
+        $scope.pushComment = function(index, event, msg){
+            var keyCode = window.event?event.keyCode:event.which;
+            if(keyCode==13){
+                //前台的处理
+                var date = new Date();
+                var comment = {photo:$scope.board.boardImg,author:$scope.board.boardName,date:date,content:msg.newComment};
+                $scope.messageList[index].comments++;
+                if($scope.messageList[index].commentInfoList == undefined){
+                    $scope.messageList[index].commentInfoList = [];
+                    $scope.messageList[index].commentInfoList.unshift(comment);
+                }
+                else{
+                    $scope.messageList[index].commentInfoList.unshift(comment);
+                }
+
+                //提交给后台的东西
+                var data = msg.newComment;
+                var config = {params:{id:msg.id}};
+                userService.postComment(data,config);
+
+                msg.newComment = "";
+                msg.commentFlag = false;
+            };
+        };
+
+        //push dataURL of photo into dataUrlArr add by zj 02/16
+        $scope.addPhoto = function(){
+            if($scope.uploaded<9){
+                var file = angular.element("#file")[0].files[0];
+                var fileReader = new FileReader();
+                fileReader.readAsDataURL(file);
+                fileReader.onload = function(){
+                    $scope.dataUrlArr.push({url:fileReader.result,count:++$scope.uploaded});
+                    $scope.photoTipHide = false;
+                    $scope.$apply();
+                }
+            }
+            else{
+                alert("最多只能上传9张图片！");
+                return;
+            }
+        }
+
+        $scope.closePhotoTip = function(){
+            $scope.photoTipHide = true;
+            $scope.dataUrlArr = [];
+            $scope.uploaded = 0;
+        }
+
+        $scope.selectPic = function(){
+            angular.element("#file").click();
+        }
+
+        $scope.$watch("uploaded",function(){
+            if($scope.uploaded==9){
+                angular.element(".addPic").hide();
+            }
+            if($scope.uploaded==0){
+                angular.element(".addPic").show();
+            }
+        })
+
+        //改变图片大小
+        $scope.enlarge = function(event){
+            $uibModal.open({
+                templateUrl: 'big_pic.html',
+                controller: BigPicController,
+                resolve: {
+                    event: event
+                }
+            })
+        }
+
+        var BigPicController = function($scope, $uibModalInstance, event){
+            var ele = event.target;
+            $scope.dataUrl = ele.src;
+            $scope.closeModal = function(){
+                $uibModalInstance.dismiss('cancel');
+            }
+        }
+
+        //add by zj 17/03/02
+        //edit rich text modal
+        $scope.openRichTextEditor = function(){
+            $uibModal.open({
+                templateUrl: 'richTextEditor.html',
+                controller: richTextController,
+                scope: $scope
+            });
+        }
+        var richTextController = function($scope, $sce, $uibModalInstance){
+            $scope.richText = {content: ""};
+            var markHtml;
+            $scope.markdown = function(){
+                markHtml = markdown.toHTML($scope.richText.content);
+                $scope.preview = $sce.trustAsHtml(markHtml);
+            }
+            $scope.send = function(){
+                $scope.$parent.richTextFlag = true;
+                $scope.$parent.richText = markHtml;
+                $scope.$parent.sendMessage();
+                $scope.$parent.richTextFlag = false;
+                $uibModalInstance.dismiss('close');
+            }
+        }
+	}];
+});

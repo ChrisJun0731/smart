@@ -1,0 +1,11 @@
+<section class="content-header">
+    <h1>
+        <small>Report</small>
+    </h1>
+</section>
+<section class="content">
+
+    <div class="row">
+        <iframe src="http://localhost:5601/app/kibana#/dashboard/New-Dashboard?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:status-pie,panelIndex:1,row:1,size_x:3,size_y:2,type:visualization),(col:4,id:value-pie,panelIndex:2,row:1,size_x:3,size_y:2,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'New%20Dashboard',uiState:())" height="600" width="100%" frameborder="0" scrolling="no"></iframe>
+    </div>
+</section>

@@ -1,0 +1,584 @@
+<section class="content-header">
+    <h1>
+        <small>{{board.boardName}}'s Board</small>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <h3 class="widget-user-username" ng-bind="board.boardName"></h3>
+                    <h5 class="widget-user-desc" ng-bind="board.description"></h5>
+                </div>
+                <div class="widget-user-image">
+                    <img class="img-circle" ng-src="{{'/public/dist/img/team_default.png'}}" alt="User Avatar">
+                </div>
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.property.sales"></h5>
+                                <span class="description-text">SALES</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.property.followers"></h5>
+                                <span class="description-text">FOLLOWERS</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.property.documents"></h5>
+                                <span class="description-text">DOCUMENT</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+                </div>
+            </div>
+            <!-- /.box -->
+            <!-- About Me Box -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">About Info</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <strong><i class="fa fa-book margin-r-5"></i> Company</strong>
+
+                    <p class="text-muted" ng-bind="accountInfo.company[0].shortName">
+                    </p>
+
+                    <hr>
+
+                    <strong><i class="fa fa-map-marker margin-r-5"></i> Long Name</strong>
+
+                    <p class="text-muted" ng-bind="accountInfo.longName"></p>
+
+                    <hr>
+
+                    <strong><i class="fa fa-pencil margin-r-5"></i> Tags</strong>
+
+                    <p>
+                        <span class="label label-info" ng-repeat="tag in accountInfo.tags">{{tag.text}}</span>
+                    </p>
+
+                    <hr>
+
+                    <strong><i class="fa fa-file-text-o margin-r-5"></i> Description</strong>
+
+                    <p ng-bind="accountInfo.description"></p>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-md-6">
+            <div class="nav-tabs-custom box box-primary">
+                <div class="box-body">
+                    <div class="form-group">
+                        <textarea class="form-control" rows="3" placeholder="Enter ..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info pull-right">Send</button>
+                </div>
+
+                <hr>
+                <uib-tabset active="active" class="nav-tabs-custom">
+                    <uib-tab index="0" heading="Activity">
+                        <!-- Post -->
+                        <div class="post clearfix">
+                            <!--<p>-->
+                            <!--Displaying-->
+                            <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">all activity <span class="caret"></span></a>-->
+                            <!--by <a href="#" class="dropdown-toggle" data-toggle="dropdown">1 filter <span class="caret"></span></a>-->
+
+                            <!--<span class="pull-right label label-danger">3 New Activity</span>-->
+                            <!--</p>-->
+                        </div>
+                        <!-- /.post -->
+
+                        <!-- Post Loop -->
+                        <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList">
+                            <div class="user-block">
+                                <img class="img-circle img-bordered-sm" ng-src="{{msg.userPhoto||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                <span class="username">
+                                  <a href="#" ng-bind="msg.userName"></a>
+                                  <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
+                                </span>
+                                <span class="description">added note - <span am-time-ago="msg.time"></span></span>
+                            </div>
+                            <!-- /.user-block -->
+                            <p ng-bind="msg.content"></p>
+                            <!-- /.attachment-block -->
+                            <ul class="list-inline">
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a></li>
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-paperclip margin-r-5"></i> Pin</a>
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-commenting-o margin-r-5"></i> Comment</a>
+                                </li>
+                                <li class="pull-right">
+                                    <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
+                                        ({{msg.comments}})</a></li>
+                            </ul>
+
+                            <!--<input class="form-control input-sm" type="text" placeholder="Type a comment">-->
+                        </div>
+                        <!-- /.post -->
+
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+                    <uib-tab index="1" heading="Timeline">
+                        <!-- The timeline -->
+                        <ul class="timeline timeline-inverse">
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-red">
+                          10 Feb. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-envelope bg-blue"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+
+                                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+
+                                    <div class="timeline-body">
+                                        Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                                        weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                                        jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                                        quora plaxo ideeli hulu weebly balihoo...
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-primary btn-xs">Read more</a>
+                                        <a class="btn btn-danger btn-xs">Delete</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-user bg-aqua"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                    <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
+                                    </h3>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-comments bg-yellow"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+
+                                    <div class="timeline-body">
+                                        Take me to your leader!
+                                        Switzerland is small and neutral!
+                                        We are more like Germany, ambitious and misunderstood!
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-warning btn-flat btn-xs">View comment</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-green">
+                          3 Jan. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-camera bg-purple"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+
+                                    <div class="timeline-body">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <li>
+                                <i class="fa fa-clock-o bg-gray"></i>
+                            </li>
+                        </ul>
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+                    <uib-tab index="2" heading="Portfolio">
+                        <div class="box box-default">
+                            <div class="box-header">
+                                <div class="box-tools pull-right">
+                                    <div class="btn-group has-feedback">
+                                        <input type="text" class="form-control input-sm" placeholder="Search...">
+                                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                    </div>
+                                    <div class="btn-group" uib-dropdown>
+                                            <button class="btn btn-success btn-sm" uib-dropdown-toggle>Action<span class="caret"></span></button>
+                                            <ul class="dropdown-menu" uib-dropdown-menu>
+                                                <li><a href="" ng-click="openPortfolioModal()">Add Portfolio</a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="" ng-click="importPortfolio()">Import Portfolio From File</a></li>
+                                            </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="portfolio in portfolios">
+                                            <td><a href="" ng-click="showPortfolios($index)">{{portfolio.title}}</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <!-- /.nav-tabs-custom -->
+                </uib-tabset>
+                <!-- /.tab-content -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+            <!-- STATISTIC -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Summary</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+                                <h5 class="description-header">$35,210.43</h5>
+                                <span class="description-text">TOTAL TRADING</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="description-block">
+                                <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+                                <h5 class="description-header">$10,390.90</h5>
+                                <span class="description-text">TOTAL PROFIT</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a href="javascript::;" class="uppercase">View Detail Summary</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /.box -->
+            <!-- PRODUCT LIST -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recently Added Sales</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                        <!--item-->
+                        <li class="item" ng-repeat="sale in salesList">
+                            <div class="product-img">
+                                <img ng-src="{{'/public/dist/img/team_default.png'}}" class="img-circle" alt="User Image">
+                            </div>
+                            <div class="product-info">
+                                <a href="" class="product-title">{{sale.name}}
+                                    <span class="label label-warning pull-right">{{sale.amount}}</span></a>
+                        <span class="product-description">
+                         {{sale.info}}
+                        </span>
+                            </div>
+                        </li>
+                        <!-- /.item -->
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a href="" class="uppercase">View All Sales</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /.box -->
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Latest Files</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="file in fileList"><a href="#"><i class="fa fa-file-excel-o text-yellow"></i> {{file.fileName}}</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a ui-sref="root.disk({id:board.id,path:'home'})" class="uppercase">View More Files</a>
+                </div>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+</section>
+
+<script type="text/ng-template" id="portfolioModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Add Portfolio</h3>
+    </div>
+    <div class="modal-body">
+        <form id="portfolioForm" name="portfolioForm" class="form-horizontal" ng-submit="save(portfolioForm.$valid)">
+            <div class="form-group">
+                <label id="title" class="control-label col-sm-1">Title:</label>
+                <div class="col-sm-4">
+                    <input type="text" name="title" class="form-control" ng-model="portfolio.title" placeholder="Title" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label id="email" class="control-label col-sm-1">Email:</label>
+                <div class="col-sm-4">
+                    <input name="email" type="email" class="form-control col-sm-4" ng-model="portfolio.email" placeholder="Email" required/>
+                </div>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>Cusip</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in portfolio.list">
+                    <td><input type="text" ng-model="record.cusip" placeholder="Input Cusip"/></td>
+                    <td><input type="text" ng-model="record.quantity" placeholder="Input Quantity"/></td>
+                    <td><input type="text" ng-model="record.price" placeholder="Input Price"/></td>
+                    <td><button class="btn btn-danger btn-sm" ng-click="delPortfolio($index)">Del</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-primary" ng-click="addPortfolio()">Add Portfolio</button>
+    </div>
+    <div class="modal-footer">
+        <button form="portfolioForm" type="submit" class="btn btn-success">Save</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<!--File upload Modal -->
+<script type="text/ng-template" id="fileUpload.html">
+    <div class="modal-header">
+        <h3 class="modal-title">File Upload</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <h4>Select files</h4>
+
+                <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                <!--Multiple-->
+                <input type="file" nv-file-select="" uploader="uploader"/><br/>
+
+                <h4>Portfolio Title</h4>
+                <input type="text" ng-model="title" placeholder="Input portfolio title"/>
+                <!--Single-->
+                <!--<input type="file" nv-file-select="" uploader="uploader" />-->
+                <!--<h4>Status</h4>-->
+                <!--<div class="btn-group">-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>-->
+                <!--</div>-->
+            </div>
+
+            <div class="col-md-9" style="margin-bottom: 40px">
+
+                <h3>Upload queue</h3>
+                <p>Queue length: {{ uploader.queue.length }}</p>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="50%">Name</th>
+                        <th ng-show="uploader.isHTML5">Size</th>
+                        <th ng-show="uploader.isHTML5">Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in uploader.queue">
+                        <td><strong>{{ item.file.name }}</strong></td>
+                        <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                        <td ng-show="uploader.isHTML5">
+                            <div class="progress" style="margin-bottom: 0;">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                            <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                            <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        </td>
+                        <td nowrap>
+                            <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                <span class="glyphicon glyphicon-upload"></span> Upload
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                            </button>
+                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                <span class="glyphicon glyphicon-trash"></span> Remove
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <div>
+                        Queue progress:
+                        <div class="progress" style="">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="portfolioDetail.html">
+        <div class="modal-header">
+            <form name="detailForm" editable-form class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Title:</label>
+                    <div class="col-sm-4">
+                        <span e-name="title" editable-text="portfolio.title" e-required>{{portfolio.title||'empty'}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-1">Email:</label>
+                    <div class="col-sm-4">
+                        <span e-name="email" editable-email="portfolio.email" e-required>{{portfolio.email||'xxx@xxx.com'}}</span>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-default" ng-click="detailForm.$show()" ng-show="!detailForm.$visible">
+                        Edit
+                    </button>
+                    <span ng-show="detailForm.$visible">
+                        <button type="submit" class="btn btn-primary" ng-disabled="detailForm.$waiting">
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-default" ng-disabled="detailForm.$waiting" ng-click="detailForm.$cancel()">
+                            Cancel
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered table-hover table-condensed">
+                <tr style="font-weight: bold;">
+                    <td style="width:30%;">Cusip</td>
+                    <td style="width:30%;">Quantity</td>
+                    <td style="width:25%;">Price</td>
+                    <td style="width:20%;">Edit</td>
+                </tr>
+                <tr ng-repeat="record in portfolio.list">
+                    <td><span editable-text="record.cusip" e-form="rowform">{{record.cusip || 'empty'}}</span></td>
+                    <td><span editable-text="record.quantity" e-form="rowform">{{record.quantity || 'empty'}}</span></td>
+                    <td><span editable-text="record.price" e-form="rowform">{{record.price || 'empty'}}</span></td>
+                    <td style="white-space:nowrap;">
+                        <form editable-form name="rowform" class="form-buttons form-inline" ng-show="rowform.$visible">
+                            <button type="submit" class="btn btn-primary" ng-disabled="rowform.$waiting">save</button>
+                            <button type="button" class="btn btn-warning" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()">cancel</button>
+                        </form>
+                        <div class="buttons" ng-show="!rowform.$visible">
+                            <button type="button" class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                            <button type="button" class="btn btn-danger" ng-click="delPortfolio($index)">Del</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <button class="btn btn-default" ng-click="addPortfolio()">Add Portfolio</button>
+        </div>
+        <div class="modal-footer">
+                <button class="btn btn-success" ng-click="updatePortfolio(detailForm.$valid)">Save</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+</script>

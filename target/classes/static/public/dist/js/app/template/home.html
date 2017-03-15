@@ -1,0 +1,727 @@
+<style type="text/css">
+textarea[ui-mention], textarea[ui-mention] + * {
+  line-height: 1em;
+  font-size: 1em;
+  padding: 5px;
+  border: 1px;
+  font-family: helvetica;
+  font-weight: normal; }
+
+textarea[ui-mention] {
+  min-height: 100px;
+  width: 100%;
+  display: block;
+  border: 1px solid #ccc;
+  z-index: 2;
+  position: relative; }
+
+  textarea[ui-mention][ui-mention] {
+    background: transparent; }
+
+mention-container a {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer; }
+  a:hover {
+    color: green; }
+
+.mention-container {
+  position: relative; }
+
+.mention-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px;
+  padding: 2px;
+  z-index: 1;
+  color: transparent;
+  white-space: pre-wrap;
+  border: 1px solid transparent;
+  width: 100%; }
+
+.mention-container .dropdown {
+  position: absolute;
+  top: 100%;
+  min-width: 150px;
+  max-width: 220px;
+  right: 0;
+  background: white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index:2;
+  border: 1px solid #cecece;
+}
+
+.dropdown li{
+    padding: 5px;
+}
+
+.dropdown .active {
+    background-color: #cecece;
+    color: #ff9494;
+}
+
+.photoTip {
+    position: absolute;
+    max-width: 350px;
+    height: 200px;
+    border: 1px solid #fcfcfc;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    top: 155px;
+    left: 0px;
+    z-index: 100;
+    background-color: white;
+}
+
+#photoTip:before{
+    content: " ";
+    position: absolute;
+    top: -5px;
+    left: 8%;
+    margin-left: -5px;
+    width: 0;
+    height: 0;
+    border-bottom: 5px solid gray;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+#photoTip:after{
+    content: " ";
+    position: absolute;
+    top: -4px;
+    left: 8%;
+    margin-left:-4px;
+    width: 0;
+    height: 0;
+    border-bottom: 4px solid white;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}
+.box-body img{
+    margin-left: 5px;
+    margin-top: 5px;
+    width: 100px;
+    height: 100px;
+}
+.box-body img:nth-child(3n+1){
+    margin-left: 0px;
+}
+#note img{
+    width: 200px;
+    height: 200px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+#note img:nth-child(3n+1),.addPic:nth-child(3n+1){
+    margin-left: 0px;
+}
+#note img:hover{
+    cursor: pointer;
+}
+.addPic{
+    width: 100px;
+    height: 100px;
+    padding: 35px;
+    border: 3px dashed gray;
+    color: gray;
+    margin-left: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    vertical-align: top;
+}
+.addPic:hover{
+    border: 3px dashed orange;
+    color: orange;
+}
+</style>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>My Home</small>
+    </h1>
+</section>
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img class="profile-user-img img-responsive img-circle" ng-src="{{board.boardImg||'/public/dist/img/user_default.png'}}" alt="User profile picture">
+
+                    <h3 class="profile-username text-center" ng-bind="board.boardName"></h3>
+
+                    <p class="text-muted text-center" ng-bind="board.property.title"></p>
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            <b>Followers</b> <a class="pull-right" ng-bind="board.property.followers"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Following</b> <a class="pull-right" ng-bind="board.property.following"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Tasks</b> <a class="pull-right" ng-bind="board.property.tasks"></a>
+                        </li>
+                    </ul>
+
+                    <a ui-sref="root.profile" class="btn btn-primary btn-block"><b>Edit</b></a>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!--box about me add by zj 2016/10/25-->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">About Me</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <i class="fa fa-envelope-o margin-r-5"></i><strong>Email</strong>
+                    <p class="text-muted">{{board.property.email}}</p>
+                    <hr>
+                    <strong> <i class="fa fa-phone margin-r-5" popover-title="Call Via Phone" uib-popover-template="'telTip.html'" popover-placement="right-top"></i>Phone</strong>
+                    <p class="text-muted">{{board.property.phone}}</p>
+                    <hr>
+                    <strong><i class="fa fa-building margin-r-5"></i>Company</strong>
+                    <p class="text-muted">{{board.property.company||"RongMai"}}</p>
+                </div>
+            </div>
+            <!-- /.box -->
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Latest Files</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="file in fileList"><a href=""><i class="fa fa-file-{{file.fileType}}-o text-yellow"></i> {{file.fileName}}</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a ui-sref="root.disk({id:board.id,path:'home'})" class="uppercase">View My Disk</a>
+                </div>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-body">
+                    <div class="form-group mention-container">
+                        <textarea ui-mention my-mention class="form-control" rows="3" placeholder="Enter ..." ng-model="messageContent"></textarea>
+                        <div class="mention-highlight"></div>
+                        <ul ng-if="$mention.choices.length" class="dropdown">
+                            <li>请选择最近@的人或者直接输入</li>
+                            <li ng-repeat="choice in $mention.choices"  ng-click="$mention.select(choice)" ng-mouseover="$mention.activeChoice=choice" ng-class="{'active': $mention.activeChoice==choice}">
+                                <span>
+                                    {{::choice.first}} {{::choice.last}}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <label for="file" class="col-md-1" uib-tooltip="Add Photo"><span style="color:#3c8dbc"><i class="fa fa-camera gi-2x"></i></span></label>
+                    <input type="file" id="file" style="display:none;" onchange="angular.element(this).scope().addPhoto()"/>
+                    <a href="" class="col-md-1" uib-tooltip="Rich Text" ng-click="openRichTextEditor()"><span><i class="fa fa-text-height gi-2x"></i></span></a>
+                    <a href="#" class="col-md-1" uib-tooltip="Add Report"><span><i class="fa fa-pie-chart gi-2x"></i></span></a>
+                    <button type="submit" class="btn btn-info pull-right" ng-click="sendMessage()">Send</button>
+                    <div id="photoTip" class="photoTip" ng-hide="photoTipHide" ng-init="photoTipHide=true;">
+                        <div class="box box-default">
+                            <div  class="box-header">
+                                <h3 class="box-title">Upload From Local</h3>
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" ng-click="closePhotoTip()"><i class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                <div>total {{uploaded}} picture, remain {{9-uploaded}} picture can upload.</div>
+                                <div>
+                                    <img ng-src="{{dataUrl.url}}" ng-repeat="dataUrl in dataUrlArr"/>
+                                    <div class="addPic" ng-click="selectPic()"><i class="fa fa-plus fa-2x"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <uib-tabset active="active" class="nav-tabs-custom">
+                    <uib-tab index="0" heading="Activity">
+                        <!-- Post -->
+                        <div class="post clearfix">
+                            <!--<p>-->
+                                <!--Displaying-->
+                                <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">all activity <span class="caret"></span></a>-->
+                                <!--by <a href="#" class="dropdown-toggle" data-toggle="dropdown">1 filter <span class="caret"></span></a>-->
+
+                                <!--<span class="pull-right label label-danger">3 New Activity</span>-->
+                            <!--</p>-->
+                        </div>
+                        <!-- /.post -->
+
+                        <!-- Post Loop -->
+                        <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList">
+                            <div class="user-block" ng-show="msg.messageType=='note'">
+                                <img class="img-circle img-bordered-sm" ng-src="{{msg.userPhoto||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                <span class="username">
+                                  <a href="#" ng-bind="msg.userName"></a>
+                                  <a href="" class="pull-right btn-box-tool" ng-click="removeMsg($index, msg.id)"><i class="fa fa-times"></i></a>
+                                </span>
+                                <span class="description">added note - <span am-time-ago="msg.time"></span></span>
+                            </div>
+                            <div id="note" ng-show="msg.messageType=='note'" my-bind-html="msg.content"></div>
+                            <!-- /.user-block -->
+                            <div class="user-block" ng-show="msg.messageType=='task'">
+                                <span class="fa fa-check fa-2x" style="float:left; color:white; background-color:#f90; border-radius:4px;"></span>
+                                <span class="username">
+                                    <a href="#" ng-bind="msg.content.title"></a>
+                                    <span style="color:#999;">described {{msg.content.description}} is a task created by</span>
+                                    <a href="#" ng-bind="msg.userName"></a>
+                                </span>
+                                <span class="description">added task - <span am-time-ago="msg.time"></span></span>
+                            </div>
+                            <div class="user-block" ng-show="msg.messageType=='event'">
+                                <span class="fa fa-calendar fa-2x" style="float:left; color:red; background-color:white; border-radius:4px;"></span>
+                                <span class="username">
+                                    <a href="#" ng-bind="msg.content.title"></a>
+                                    <span style="color:#999;">,an event about {{msg.content.description}},scheduled by</span>
+                                    <a href="#" ng-bind="msg.userName"></a>
+                                </span>
+                                <span class="description">add event - <span am-time-ago="msg.time"></span></span>
+                            </div>
+                            <!-- /.task -->
+                            <!-- /.attachment-block -->
+                            <ul class="list-inline">
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                                <!--<li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a></li>-->
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-paperclip margin-r-5"></i> Pin</a>
+                                <li>
+                                    <a href="" class="link-black text-sm"  ng-click="msg.commentFlag= !msg.commentFlag" ng-init="msg.commentFlag=false">
+                                        <i class="fa fa-commenting-o margin-r-5" ></i> Comment
+                                    </a>
+                                </li>
+                                <li class="pull-right">
+                                    <a href="" class="link-black text-sm" ng-click="msg.commentsFlag= !msg.commentsFlag" ng-init="msg.commentsFlag=false">
+                                        <i class="fa fa-comments-o margin-r-5"></i> Comments({{msg.comments}})
+                                    </a>
+                                </li>
+                            </ul>
+                            <div ng-show="msg.commentsFlag">
+                                <div ng-repeat="comment in msg.commentInfoList">
+                                    <div class="user-block">
+                                        <img class="img-circle img-bordered-sm" ng-src="{{comment.photo||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                        <span class="username">
+                                            <a href="#" ng-bind="comment.author" style="margin-right:5px"></a>
+                                            <span am-time-ago="comment.date" style="margin-right:5px;color:#999;font-size:12px"></span>
+                                            <span style="color:#999;font-size:12px" >reply:</span>
+                                        </span>
+                                        <span class="description">{{comment.content}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-show="msg.commentFlag">
+                                <input class="form-control input-sm" type="text" placeholder="Type a comment, press enter to publish." ng-model="msg.newComment" ng-keyup="pushComment($index, $event, msg)">
+                            </div>
+
+                        </div>
+                        <!-- /.post -->
+
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+                    <uib-tab index="1" heading="Timeline">
+                        <!-- The timeline -->
+                        <ul class="timeline timeline-inverse">
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-red">
+                          10 Feb. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-envelope bg-blue"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+
+                                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+
+                                    <div class="timeline-body">
+                                        Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                                        weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                                        jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                                        quora plaxo ideeli hulu weebly balihoo...
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-primary btn-xs">Read more</a>
+                                        <a class="btn btn-danger btn-xs">Delete</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-user bg-aqua"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                    <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
+                                    </h3>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-comments bg-yellow"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+
+                                    <div class="timeline-body">
+                                        Take me to your leader!
+                                        Switzerland is small and neutral!
+                                        We are more like Germany, ambitious and misunderstood!
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-warning btn-flat btn-xs">View comment</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-green">
+                          3 Jan. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-camera bg-purple"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+
+                                    <div class="timeline-body">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <li>
+                                <i class="fa fa-clock-o bg-gray"></i>
+                            </li>
+                        </ul>
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+                    <uib-tab index="2" heading="Task">
+                        <div class="post clearfix"></div>
+
+                        <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList" ng-show="msg.messageType=='task'">
+                            <div class="user-block">
+                                <span class="fa fa-check fa-2x" style="float:left; color:white; background-color:#f90; border-radius:4px;"></span>
+                                <span class="username">
+                                        <a href="#" ng-bind="msg.content.title"></a>
+                                        <span style="color:#999;">described {{msg.content.description}} is a task created by</span>
+                                        <a href="#" ng-bind="msg.userName"></a>
+                                    </span>
+                                <span class="description">added task - <span am-time-ago="msg.time"></span></span>
+                            </div>
+
+                            <ul class="list-inline">
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                                <!--<li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a></li>-->
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-paperclip margin-r-5"></i> Pin</a>
+                                <li>
+                                    <a href="" class="link-black text-sm"  ng-click="msg.commentFlag= !msg.commentFlag" ng-init="msg.commentFlag=false">
+                                        <i class="fa fa-commenting-o margin-r-5" ></i> Comment
+                                    </a>
+                                </li>
+                                <li class="pull-right">
+                                    <a href="" class="link-black text-sm" ng-click="msg.commentsFlag= !msg.commentsFlag" ng-init="msg.commentsFlag=false">
+                                        <i class="fa fa-comments-o margin-r-5"></i> Comments({{msg.comments}})
+                                    </a>
+                                </li>
+                            </ul>
+                            <div ng-show="msg.commentsFlag">
+                                <div ng-repeat="comment in msg.commentInfoList">
+                                    <div class="user-block">
+                                        <img class="img-circle img-bordered-sm" ng-src="{{comment.photo||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                        <span class="username">
+                                            <a href="#" ng-bind="comment.author" style="margin-right:5px"></a>
+                                            <span am-time-ago="comment.date" style="margin-right:5px;color:#999;font-size:12px"></span>
+                                            <span style="color:#999;font-size:12px" >reply:</span>
+                                        </span>
+                                        <span class="description">{{comment.content}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-show="msg.commentFlag">
+                                <input class="form-control input-sm" type="text" placeholder="Type a comment, press enter to publish." ng-model="msg.newComment" ng-keyup="pushComment($index, $event, msg)">
+                            </div>
+                    </div>
+
+                    </uib-tab>
+
+                    <uib-tab index="3" heading="Event">
+                        <div class="post clearfix"></div>
+
+                        <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList" ng-show="msg.messageType=='event'">
+                            <div class="user-block post clearfix" >
+                                <span class="fa fa-calendar fa-2x" style="float:left; color:red; background-color:white; border-radius:4px;"></span>
+                                <span class="username">
+                                        <a href="#" ng-bind="msg.content.title"></a>
+                                        <span style="color:#999;">,an event about {{msg.content.description}},scheduled by</span>
+                                        <a href="#" ng-bind="msg.userName"></a>
+                                    </span>
+                                <span class="description">add event - <span am-time-ago="msg.time"></span></span>
+                            </div>
+
+                            <ul class="list-inline">
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                                <!--<li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a></li>-->
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-paperclip margin-r-5"></i> Pin</a>
+                                <li>
+                                    <a href="" class="link-black text-sm"  ng-click="msg.commentFlag= !msg.commentFlag" ng-init="msg.commentFlag=false">
+                                        <i class="fa fa-commenting-o margin-r-5" ></i> Comment
+                                    </a>
+                                </li>
+                                <li class="pull-right">
+                                    <a href="" class="link-black text-sm" ng-click="msg.commentsFlag= !msg.commentsFlag" ng-init="msg.commentsFlag=false">
+                                        <i class="fa fa-comments-o margin-r-5"></i> Comments({{msg.comments}})
+                                    </a>
+                                </li>
+                            </ul>
+                            <div ng-show="msg.commentsFlag">
+                                <div ng-repeat="comment in msg.commentInfoList">
+                                    <div class="user-block">
+                                        <img class="img-circle img-bordered-sm" ng-src="{{comment.photo||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                        <span class="username">
+                                            <a href="#" ng-bind="comment.author" style="margin-right:5px"></a>
+                                            <span am-time-ago="comment.date" style="margin-right:5px;color:#999;font-size:12px"></span>
+                                            <span style="color:#999;font-size:12px" >reply:</span>
+                                        </span>
+                                        <span class="description">{{comment.content}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-show="msg.commentFlag">
+                                <input class="form-control input-sm" type="text" placeholder="Type a comment, press enter to publish." ng-model="msg.newComment" ng-keyup="pushComment($index, $event, msg)">
+                            </div>
+                    </div>
+
+                    </uib-tab>
+
+                    <uib-tab index="4" heading="Opportunity">
+                        Content of Opportunity
+                    </uib-tab>
+
+            <!-- /.nav-tabs-custom -->
+            </uib-tabset>
+        </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+            <!-- Members Box -->
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Latest Boards</h3>
+
+                    <div class="box-tools pull-right">
+                        <!--<span class="label label-danger">0 New Activities</span>-->
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <ul class="users-list clearfix">
+                        <li ng-repeat="top in topList">
+                            <img ng-src="{{top.boardImg||'/public/dist/img/user_default.png'}}" alt="User Image">
+                            <a class="users-list-name" ui-sref="root.board({id: '{{top.id}}'})" ng-bind="top.boardName"></a>
+                            <span class="users-list-date">{{top.updateDate | amDateFormat:'DD MMM'}}</span>
+                        </li>
+                    </ul>
+                    <!-- /.users-list -->
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a href="#" class="uppercase">View All</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- chat Box -->
+            <!--<div class="box box-success direct-chat direct-chat-success">-->
+                <!--<div class="box-header with-border">-->
+                    <!--<h3 class="box-title">Direct Chat</h3>-->
+
+                    <!--<div class="box-tools pull-right">-->
+                        <!--<span data-toggle="tooltip" title="3 New Messages" class="badge bg-green">3</span>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>-->
+                        <!--</button>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">-->
+                            <!--<i class="fa fa-comments"></i></button>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-header &ndash;&gt;-->
+                <!--<div class="box-body">-->
+                    <!--&lt;!&ndash; Conversations are loaded here &ndash;&gt;-->
+                    <!--<div class="direct-chat-messages">-->
+                        <!--&lt;!&ndash; Message. Default to the left &ndash;&gt;-->
+                        <!--<div class="direct-chat-msg">-->
+                            <!--<div class="direct-chat-info clearfix">-->
+                                <!--<span class="direct-chat-name pull-left">Alexander Pierce</span>-->
+                                <!--<span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-info &ndash;&gt;-->
+                            <!--<img class="direct-chat-img" src="/public/dist/img/user1-128x128.jpg" alt="Message User Image">&lt;!&ndash; /.direct-chat-img &ndash;&gt;-->
+                            <!--<div class="direct-chat-text">-->
+                                <!--did you finish the big trade? That's unbelievable!-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-text &ndash;&gt;-->
+                        <!--</div>-->
+                        <!--&lt;!&ndash; /.direct-chat-msg &ndash;&gt;-->
+
+                        <!--&lt;!&ndash; Message to the right &ndash;&gt;-->
+                        <!--<div class="direct-chat-msg right">-->
+                            <!--<div class="direct-chat-info clearfix">-->
+                                <!--<span class="direct-chat-name pull-right">Sarah Bullock</span>-->
+                                <!--<span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-info &ndash;&gt;-->
+                            <!--<img class="direct-chat-img" src="/public/dist/img/user3-128x128.jpg" alt="Message User Image">&lt;!&ndash; /.direct-chat-img &ndash;&gt;-->
+                            <!--<div class="direct-chat-text">-->
+                                <!--You better believe it!-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-text &ndash;&gt;-->
+                        <!--</div>-->
+                        <!--&lt;!&ndash; /.direct-chat-msg &ndash;&gt;-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash;/.direct-chat-messages&ndash;&gt;-->
+
+                    <!--&lt;!&ndash; Contacts are loaded here &ndash;&gt;-->
+                    <!--<div class="direct-chat-contacts">-->
+                        <!--<ul class="contacts-list">-->
+                            <!--<li>-->
+                                <!--<a href="#">-->
+                                    <!--<img class="contacts-list-img" src="/public/dist/img/user1-128x128.jpg">-->
+
+                                    <!--<div class="contacts-list-info">-->
+                            <!--<span class="contacts-list-name">-->
+                              <!--Count Dracula-->
+                              <!--<small class="contacts-list-date pull-right">2/28/2015</small>-->
+                            <!--</span>-->
+                                        <!--<span class="contacts-list-msg">How have you been? I was...</span>-->
+                                    <!--</div>-->
+                                    <!--&lt;!&ndash; /.contacts-list-info &ndash;&gt;-->
+                                <!--</a>-->
+                            <!--</li>-->
+                            <!--&lt;!&ndash; End Contact Item &ndash;&gt;-->
+                        <!--</ul>-->
+                        <!--&lt;!&ndash; /.contatcts-list &ndash;&gt;-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash; /.direct-chat-pane &ndash;&gt;-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+                <!--<div class="box-footer">-->
+                    <!--<form action="#" method="post">-->
+                        <!--<div class="input-group">-->
+                            <!--<input type="text" name="message" placeholder="Type Message ..." class="form-control">-->
+                      <!--<span class="input-group-btn">-->
+                        <!--<button type="submit" class="btn btn-success btn-flat">Send</button>-->
+                      <!--</span>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-footer&ndash;&gt;-->
+            <!--</div>-->
+            <!-- / chat box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <script type="text/ng-template" id="telTip.html">
+        <div>
+            <p><strong><b>Your Number:</b></strong></p>
+            <div><input type="text" ng-model="board.property.phone"/></div>
+            <button>Place Call</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="big_pic.html">
+        <div>
+            <div class="box box-default">
+                <div class="box box-header">
+                    <div class="box-title">
+                        Pic
+                    </div>
+                    <div class="box-tools pull-right">
+                        <a href="" ng-click="closeModal()"><i class="fa fa-times fa-2x"></i></a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <img src="{{dataUrl}}" style="display: block; width: 90%; height: 80%; margin:auto;"/>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="richTextEditor.html">
+        <div>
+            <div class="box box-default">
+                <div class="box-header">
+                    <h3 class="box-title">Rich Text Editor</h3>
+                </div>
+                <div class="box-body">
+                            <uib-tabset active="0">
+                                <uib-tab heading="Edit Message" index="0">
+                                    <div class="form-group">
+                                        <textarea rows="4" class="form-control" ng-model="richText.content" placeholder="***MarkDown***"></textarea>
+                                    </div>
+                                    <button class="btn btn-info" ng-click="send()">Send</button>
+                                </uib-tab>
+                                <uib-tab index="1" heading="Preview" ng-click="markdown()">
+                                    <div class="form-group" ng-bind-html="preview" style="width:90%; height:auto; padding-left:15px;">
+                                    </div>
+                                </uib-tab>
+                            </uib-tabset>
+                </div>
+            </div>
+
+        </div>
+    </script>
+</section>

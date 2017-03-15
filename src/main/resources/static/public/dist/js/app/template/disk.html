@@ -1,0 +1,322 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>File Disk</small>
+    </h1>
+
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <small class="box-title" style="font-size: 80%">
+                        <ol class="breadcrumb" style="background: #ffffff">
+                            <!--<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>-->
+                            <!--<li><a href="#">Folder1</a></li>-->
+                            <!--<li class="active">Folder2</li>-->
+                            <li ng-repeat="path in pathList">
+                                <a ui-sref="root.disk({id:boardId,root:path.root,path:path.path})" ng-show="$index<pathList.length-1"><i class="fa fa-dashboard" ng-show="$index==0"></i>{{path.path}}</a>
+                                 <span class="active" ng-show="$index==pathList.length-1"><i class="fa fa-dashboard" ng-show="$index==0"></i>{{path.path}}</span>
+                            </li>
+
+                        </ol>
+                    </small>
+
+                    <div class="box-tools pull-right">
+
+                        <div class="btn-group">
+                            <input type="text" class="form-control input-sm" placeholder="Search Disk">
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                        </div>
+
+                        <div class="btn-group" uib-dropdown>
+                            <button id="single-button" type="button" class="btn btn-success"  uib-dropdown-toggle><i class="fa fa-plus"></i></button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                <li role="menuitem"><a href="" ng-click="openFolderModal()">Add Folder</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="" ng-click="openUploadModal('lg')">Upload File</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <div class="mailbox-controls">
+                        <!-- Check all button -->
+                        <button type="button" class="btn btn-default btn-sm checkbox-toggle" ng-click="checkAll()"><i class="fa" ng-class="{'fa-square-o':!selectedAll,'fa-check-square-o':selectedAll}"></i>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm" ng-click="deleteBatch()"><i class="fa fa-trash-o"></i></button>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fa fa-download"></i></button>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fa fa-share"></i></button>
+                        </div>
+                        <!-- /.btn-group -->
+                        <button type="button" class="btn btn-default btn-sm" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+                        <div class="pull-right">
+                            <!--1-50/200-->
+                            <!--<div class="btn-group">-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.btn-group &ndash;&gt;-->
+                        </div>
+                        <!-- /.pull-right -->
+                    </div>
+                    <div class="box-body">
+
+                        <table class="table">
+                            <tbody><tr>
+                                <th style="width: 10px">#</th>
+                                <th style="width: 10px"></th>
+                                <th>Name</th>
+                                <th>Size</th>
+                                <th>Creator</th>
+                                <th>Update Time</th>
+                                <th style="width: 40px">Status</th>
+                            </tr>
+                            <tr ng-repeat="file in fileList">
+                                <td><input type="checkbox" ng-model="file.Selected"/></td>
+                                <td class="mailbox-star"><a href=""><i class="fa fa-star-o text-yellow"></i></a></td>
+                                <td>
+                                    <span class="fa fa-fw" ng-class="{'text-yellow':file.fileType=='folder','text-green':file.fileType!='folder','fa-{{file.fileType}}':file.fileType=='folder','fa-file-{{file.fileType}}-o':file.fileType!='folder'}"></span>
+                                    <a ui-sref="root.disk({id:file.boardId,root:file.id,path:file.fileName})" ng-bind="file.fileName" ng-show="file.fileType=='folder'"></a>
+                                    <a href="/disk/download?id={{file.id}}" ng-bind="file.fileName" ng-show="file.fileType!='folder'"></a>
+                                </td>
+                                <td>
+                                   {{file.fileSize | bytes}}
+                                </td>
+                                <td>
+                                    {{file.creator}}
+                                </td>
+                                <td>
+                                    {{file.updateDate | amDateFormat:'YYYY.MM.DD hh:mm a'}}
+                                </td>
+                                <td><span class="badge" ng-class="{'bg-red':file.status=='private','bg-green':file.status=='public'}" ng-bind="file.status"></span></td>
+                            </tr>
+
+                            <!--<tr>-->
+                                <!--<td><input type="checkbox" value="1"/></td>-->
+                                <!--<td class="mailbox-star"><a href="#"><i class="fa fa-star-o text-yellow"></i></a></td>-->
+                                <!--<td><span class="fa fa-fw fa-file-excel-o text-green"></span><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg">demo.xsl</a></td>-->
+                                <!--<td>-->
+                                    <!--1.2M-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--Jack Lee-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--2016.10.01 9:00am-->
+                                <!--</td>-->
+                                <!--<td><span class="badge bg-green">public</span></td>-->
+                            <!--</tr>-->
+
+                            </tbody></table>
+
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer no-padding">
+
+                    </div>
+                </div>
+                <!-- /. box -->
+            </div>
+
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Filter</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding" style="display: none;">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><input type="checkbox" value="" name=""> recent view<span class="label label-warning pull-right">100+</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> shared <span class="label label-warning pull-right">65</span></a>
+                        </li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> star<span class="label label-warning pull-right">35</span></a></li>
+                        <li>
+                            <a href="#"><i class="fa fa-circle-o"></i> Status<i class="fa fa-angle-left pull-right"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /. box -->
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Sort</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding" style="display: none;">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Name</a></li>
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Create Date</a></li>
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Size</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+    <!--Folder Modal -->
+    <script type="text/ng-template" id="folderCreator.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Create Folder</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="folderName" class="col-sm-2 control-label">Name</label>
+
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="folderName" placeholder="Name" ng-model="folderName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Status</label>
+                        <div class="col-sm-10">
+                            <div class="btn-group">
+                                <label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>
+                                <label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+    <!--File upload Modal -->
+    <script type="text/ng-template" id="fileUpload.html">
+        <div class="modal-header">
+            <h3 class="modal-title">File Upload</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <h4>Select files</h4>
+
+                    <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                    <!--Multiple-->
+                    <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
+
+                    <!--Single-->
+                    <!--<input type="file" nv-file-select="" uploader="uploader" />-->
+                    <h4>Status</h4>
+                    <div class="btn-group">
+                        <label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>
+                        <label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>
+                    </div>
+                </div>
+
+                <div class="col-md-9" style="margin-bottom: 40px">
+
+                    <h3>Upload queue</h3>
+                    <p>Queue length: {{ uploader.queue.length }}</p>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th width="50%">Name</th>
+                            <th ng-show="uploader.isHTML5">Size</th>
+                            <th ng-show="uploader.isHTML5">Progress</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in uploader.queue">
+                            <td><strong>{{ item.file.name }}</strong></td>
+                            <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                            <td ng-show="uploader.isHTML5">
+                                <div class="progress" style="margin-bottom: 0;">
+                                    <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                            </td>
+                            <td nowrap>
+                                <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                    <span class="glyphicon glyphicon-upload"></span> Upload
+                                </button>
+                                <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                    <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                    <span class="glyphicon glyphicon-trash"></span> Remove
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <div>
+                            Queue progress:
+                            <div class="progress" style="">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                            <span class="glyphicon glyphicon-upload"></span> Upload all
+                        </button>
+                        <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                            <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+                        </button>
+                        <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                            <span class="glyphicon glyphicon-trash"></span> Remove all
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+        </div>
+    </script>
+
+</section>
+

@@ -1,0 +1,375 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>Dashboard</small>
+    </h1>
+    <!--  <ol class="breadcrumb">
+       <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+       <li><a href="#">Examples</a></li>
+       <li class="active">User profile</li>
+     </ol> -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">TOP Sales Percent</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-responsive">
+                                <canvas id="pieChart" class="chart chart-doughnut"
+                                        chart-data="data" chart-labels="labels"></canvas>
+                            </div>
+                            <!-- ./chart-responsive -->
+                        </div>
+                        <!-- /.col -->
+                        <!--<div class="col-md-4">-->
+                            <!--<ul class="chart-legend clearfix">-->
+                                <!--<li><i class="fa fa-circle-o text-red"></i> Customer1</li>-->
+                                <!--<li><i class="fa fa-circle-o text-green"></i> Customer2</li>-->
+                                <!--<li><i class="fa fa-circle-o text-yellow"></i> Customer3</li>-->
+                                <!--<li><i class="fa fa-circle-o text-aqua"></i> Customer4</li>-->
+                                <!--<li><i class="fa fa-circle-o text-light-blue"></i> Customer5</li>-->
+                                <!--<li><i class="fa fa-circle-o text-gray"></i> Others</li>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="item in percentList">
+                            <a href="">
+                                {{item.contactName}}
+                                <span class="pull-right text-green">
+                                <!--<i class="fa fa-angle-down"></i>-->
+                                  {{item.quantity}}
+                                 </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.footer -->
+            </div>
+            <!-- /.box -->
+            <!-- PRODUCT LIST -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recently Added Sales</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                        <li class="item" ng-repeat="item in saleList">
+                            <div class="product-img">
+                                <img ng-src="{{'/public/dist/img/team_default.png'}}" class="img-circle" alt="User Image">
+                            </div>
+                            <div class="product-info">
+                                <a href="" class="product-title">{{item.contactName}}
+                                    <span class="label label-warning pull-right">${{item.quantity*item.netPrice}}</span>
+                                </a>
+                                <span class="product-description">
+                                  {{item.buySell}} <a href="#">#{{item.cusip}}</a> qty:{{item.quantity}},price:{{item.netPrice}}
+                                </span>
+                            </div>
+                        </li>
+                        <!-- /.item -->
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a ui-sref="root.sales" class="uppercase">View All Sales</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-6">
+            <!-- TO DO List -->
+            <div class="box box-primary">
+                <div class="box-header">
+                    <i class="ion ion-clipboard"></i>
+
+                    <h3 class="box-title">To Do List</h3>
+
+                    <!--<div class="box-tools pull-right">-->
+                        <!--<ul class="pagination pagination-sm inline">-->
+                            <!--<li><a href="#">&laquo;</a></li>-->
+                            <!--<li><a href="#">1</a></li>-->
+                            <!--<li><a href="#">2</a></li>-->
+                            <!--<li><a href="#">3</a></li>-->
+                            <!--<li><a href="#">&raquo;</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="todo-list">
+                        <li ng-repeat="task in taskList">
+                            <!-- drag handle -->
+                          <span class="handle">
+                            <i class="fa fa-ellipsis-v"></i>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </span>
+                            <!-- checkbox -->
+                            <!--<input type="checkbox" value="" name="">-->
+                            <!-- todo text -->
+                            <input type="checkbox" name="taskDone" value="0" ng-click="finishTask($index, task.id)"/>
+                            <span class="text">{{task.title}}</span>
+                            <small>-- {{task.description}}</small>
+                            <!-- Emphasis label -->
+                            <small class="label" ng-class='getTaskInfoClass(task.distanceTime)'><i class="fa fa-clock-o"></i>    {{task.distanceTime}}</small>
+                            <!-- General tools such as edit or delete-->
+                            <div class="tools">
+                                <i class="fa fa-dollar" ng-click="openMatchModal(task,'lg')"></i>
+                                <i class="fa fa-edit" ng-click="openAddModal(task)"></i>
+                                <i class="fa fa-trash-o" ng-click="cancel(task,$index)"></i>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a ui-sref="root.task" class="uppercase">View All Tasks</a>
+                </div>
+            </div>
+
+            <!-- /.box -->
+            <!--TABLE: NEW ACCOUNT-->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <i class="fa fa-credit-card"></i>
+                    <h3 class="box-title">New Account</h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>BuySell</th>
+                                <th>Cusip</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>TradeDate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="newAccount in newAccounts">
+                                <td>{{newAccount.name}}</td>
+                                <td>{{newAccount.saleInfo.buySell}}</td>
+                                <td>{{newAccount.saleInfo.cusip}}</td>
+                                <td>{{newAccount.saleInfo.quantity}}</td>
+                                <td>{{newAccount.saleInfo.netPrice}}</td>
+                                <td>{{newAccount.saleInfo.tradeDate | amDateFormat:'YYYY-MM-DD HH:mm:ss'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- /.box -->
+            <!--TABLE: NEW Contact-->
+            <!--<div class="box box-success">-->
+                <!--<div class="box-header with-border">-->
+                    <!--<i class="fa fa-user"></i>-->
+                    <!--<h3 class="box-title">New Contact</h3>-->
+                <!--</div>-->
+                <!--<div class="box-body">-->
+                    <!--<table class="table table-hover">-->
+                        <!--<thead>-->
+                            <!--<tr>-->
+                                <!--<th>Account</th>-->
+                                <!--<th>CounterParty</th>-->
+                                <!--<th>Sales Coverage</th>-->
+                                <!--<th>BuySell</th>-->
+                                <!--<th>Ticker/Coup on/Maturity</th>-->
+                                <!--<th>Cusip</th>-->
+                                <!--<th>Price</th>-->
+                                <!--<th>Face</th>-->
+                                <!--<th>TradeDate</th>-->
+                            <!--</tr>-->
+                        <!--</thead>-->
+                    <!--</table>-->
+                <!--</div>-->
+            <!--</div>-->
+
+
+            <!-- /.box -->
+            <!-- TABLE: LATEST ORDERS -->
+            <!--<div class="box box-info">-->
+                <!--<div class="box-header with-border">-->
+                    <!--<h3 class="box-title">Popular Cusotmers</h3>-->
+
+                    <!--<div class="box-tools pull-right">-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>-->
+                        <!--</button>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-header &ndash;&gt;-->
+                <!--<div class="box-body">-->
+                    <!--<div class="table-responsive">-->
+                        <!--<table class="table no-margin">-->
+                            <!--<thead>-->
+                            <!--<tr>-->
+                                <!--<th>Name</th>-->
+                                <!--<th>Desc</th>-->
+                                <!--<th>Sales count</th>-->
+                                <!--<th>Popularity</th>-->
+                            <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer1</a></td>-->
+                                <!--<td>Desc of customer1</td>-->
+                                <!--<td><span class="label label-success">1000</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer2</a></td>-->
+                                <!--<td>Desc of customer2</td>-->
+                                <!--<td><span class="label label-warning">1500</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer3</a></td>-->
+                                <!--<td>Desc of customer3</td>-->
+                                <!--<td><span class="label label-danger">200</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer4</a></td>-->
+                                <!--<td>Desc of customer4</td>-->
+                                <!--<td><span class="label label-info">500</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#00c0ef" data-height="20">90,80,-90,70,-61,83,63</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer5</a></td>-->
+                                <!--<td>Desc of customer5</td>-->
+                                <!--<td><span class="label label-warning">1000</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#f39c12" data-height="20">90,80,-90,70,61,-83,68</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer6</a></td>-->
+                                <!--<td>Desc of customer6</td>-->
+                                <!--<td><span class="label label-danger">2000</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#f56954" data-height="20">90,-80,90,70,-61,83,63</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td><a href="#">customer7</a></td>-->
+                                <!--<td>Desc of customer7</td>-->
+                                <!--<td><span class="label label-success">100</span></td>-->
+                                <!--<td>-->
+                                    <!--<div class="sparkbar" data-color="#00a65a" data-height="20">90,80,90,-70,61,-83,63</div>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash; /.table-responsive &ndash;&gt;-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+                <!--<div class="box-footer clearfix">-->
+                    <!--<a href="javascript::;" class="btn btn-sm btn-default btn-flat pull-right">View All Customers</a>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-footer &ndash;&gt;-->
+            <!--</div>-->
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+            <!-- Calendar -->
+            <div class="box box-solid bg-green-gradient">
+                <div class="box-header">
+                    <i class="fa fa-calendar"></i>
+
+                    <h3 class="box-title">Calendar</h3>
+                    <!-- tools box -->
+                    <div class="pull-right box-tools">
+                        <!-- button with a dropdown -->
+                        <!--<div class="btn-group">-->
+                            <!--<button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">-->
+                                <!--<i class="fa fa-bars"></i></button>-->
+                            <!--<ul class="dropdown-menu pull-right" role="menu">-->
+                                <!--<li><a href="#">Add new event</a></li>-->
+                                <!--<li><a href="#">Clear events</a></li>-->
+                                <!--<li class="divider"></li>-->
+                                <!--<li><a href="#">View calendar</a></li>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                        <!--<button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>-->
+                        <!--</button>-->
+                        <!--<button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>-->
+                        <!--</button>-->
+                    </div>
+                    <!-- /. tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <!--The calendar -->
+                    <div id="calendar" style="width: 100%"></div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-gray">
+                    <div class="box-footer no-padding">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li ng-repeat="item in appointList">
+                                <a href="">
+                                    {{item.title}}
+                                <span class="label label-success pull-right">
+                                <!--<i class="fa fa-angle-down"></i>-->
+                                    <span am-time-ago="item.startTime"></span>
+                                 </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <p ng-show="!appointList">No upcoming appointments</p>
+                </div>
+                <div class="box-footer text-center">
+                    <a ng-show="appointList" ui-sref="root.calendar" class="uppercase">View All Appointment</a>
+                </div>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+</section>

@@ -1,0 +1,18 @@
+.gi-2x{font-size: 1.5em;}
+.gi-3x{font-size: 3em;}
+.gi-4x{font-size: 4em;}
+.gi-5x{font-size: 5em;}
+.img-small{
+    width: 30px !important;
+    height: 30px !important;
+}
+
+form[editable-form] > div {margin: 10px 0;}
+
+.table-detail-img{
+    /*border: 2px solid #00a65a;*/
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+}

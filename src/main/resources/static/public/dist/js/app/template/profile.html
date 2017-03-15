@@ -1,0 +1,118 @@
+<style type="text/css">
+    #edit_profile_photo .image_wrapper{cursor:pointer;display:inline-block;height:2in;width:2in;position:relative}
+    #edit_profile_photo .image_wrapper:before{display:none}
+    #edit_profile_photo .image_wrapper.active:after,#edit_profile_photo .image_wrapper.active:before,#edit_profile_photo .image_wrapper:active:after,#edit_profile_photo .image_wrapper:active:before,#edit_profile_photo .image_wrapper:hover:after,#edit_profile_photo .image_wrapper:hover:before{color:#fff;box-sizing:border-box;position:absolute}
+    #edit_profile_photo .image_wrapper.active:before,#edit_profile_photo .image_wrapper:active:before,#edit_profile_photo .image_wrapper:hover:before{font-size:40px;display:inline-block;top:3.5rem;left:76px;z-index:1}
+    #edit_profile_photo .image_wrapper.active:after,#edit_profile_photo .image_wrapper:active:after,#edit_profile_photo .image_wrapper:hover:after{content:"";font-family:sans-serif;text-align:center;background-color:rgba(0,0,0,.7);border:.25rem solid #439fe0;border-radius:.2rem;top:0;left:0;width:2in;height:2in;padding:5.5rem 2rem 0}
+    .member_image{border-radius:.2rem;background-size:100%;background-repeat:no-repeat;display:inline-block;position:relative}
+    .member_image.thumb_192{width:2in;height:2in}
+    .cropArea {
+        background: #E4E4E4;
+        overflow: hidden;
+        height:350px;
+    }
+
+</style>
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <!-- /.box -->
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Edit Profile</h3>
+                    <small class="pull-right">Profile information is visible to all team members.</small>
+                    <div class="box-tools">
+                        <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button> -->
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-8">
+                        <form name="userForm">
+                        <h4>First Name</h4>
+                        <div class="input-group input-group-lg" ng-class="{ 'has-error': userForm.firstName.$invalid }">
+                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                            <input type="text" class="form-control" placeholder="first name" name="firstName" ng-model="userInfo.firstName" ng-required="true">
+                        </div>
+
+                        <h4>Last Name</h4>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                            <input type="text" class="form-control" placeholder="last name" ng-model="userInfo.lastName">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4" id="edit_profile_photo">
+                        <a href="" ng-click="openImgModal()">
+                            <span class="image_wrapper fa fa-camera">
+                              <img ng-src="{{userInfo.photo||'/public/dist/img/user_default.png'}}" class="member_image thumb_192 img-thumbnail" alt="Responsive image">
+                            </span>
+                        </a>
+                    </div>
+                    <div class="col-md-12">
+                        <h4>Description</h4>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><i class="fa fa-info-circle"></i></span>
+                            <input type="text" class="form-control" placeholder="Description" ng-model="userInfo.description">
+                        </div>
+
+                        <h4>Email</h4>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                            <input type="email" class="form-control" placeholder="Email" ng-model="userInfo.email" ng-disabled="true">
+                        </div>
+
+                        <h4>Phone Number</h4>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                            <input type="text" class="form-control" placeholder="(123)555 5555" ng-model="userInfo.phone">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <button type="button" class="btn btn-success pull-right" ng-click="saveProfile()" ng-disabled="userForm.$invalid"><i class="fa fa-save"></i> Save
+                    </button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->
+<!--Folder Modal -->
+<script type="text/ng-template" id="imgCreator.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Photo</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="fileInput" class="col-sm-4 control-label">Select an image file: </label>
+
+                    <div class="col-sm-8">
+                        <input type="file" id="fileInput" nv-file-select="" uploader="uploader"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12 cropArea">
+                        <img-crop image="myImage" result-image="croppedImage" area-type="square"></img-crop>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>

@@ -1,0 +1,494 @@
+<section class="content-header">
+    <h1>
+        <small>Contact</small>
+    </h1>
+    <!--  <ol class="breadcrumb">
+       <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+       <li><a href="#">Examples</a></li>
+       <li class="active">User profile</li>
+     </ol> -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Contact</h3>
+                    <div class="box-tools pull-right">
+                        <div class="btn-group">
+                            <input type="text" class="form-control input-sm" placeholder="Search Contact">
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                        </div>
+                        <div class="btn-group" uib-dropdown>
+                            <button id="add-company-button" type="button" class="btn btn-success"  uib-dropdown-toggle><i class="fa fa-plus"></i></button>
+                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="add-company-button">
+                                <li role="menuitem"><a href="" ng-click="openContactModal({})">Add Contact</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="" ng-click="openContactUploadModal('lg')">Import Contact From File</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="" ng-click="openMappingUploadModal('lg')">Import Mapping From File</a></li>
+                                <li class="divider"></li>
+                                <li role="menuitem"><a href="/common/download?filename=crm-contacts.csv" >Download Contact Template</a></li>
+                                <li role="menuitem"><a href="/common/download?filename=mxUserFeed.csv" >Download Mapping Template</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.box-tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <div class="mailbox-controls">
+                        <!-- Check all button -->
+
+
+                        <!-- /.btn-group -->
+
+                        <!--<div class="btn-group">-->
+                            <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>-->
+                            <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>-->
+                        <!--</div>-->
+                        <!--1-50/200-->
+                        <!--&lt;!&ndash; /.btn-group &ndash;&gt;-->
+                        <!--<div class="pull-right">-->
+                            <!--<p>200 contact sorted by last name<i class="fa fa-sort-amount-desc"></i></p>-->
+
+                        <!--</div>-->
+                        <!-- /.pull-right -->
+                    </div>
+                    <div class="box-body">
+
+                        <div class="box" ng-repeat="contact in contactList">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" ng-bind="contact.id"></h3>
+                                <div class="box-tools pull-right">
+                                    <!-- Buttons, labels, and many other things can be placed here! -->
+                                    <!-- Here is a label for example -->
+                                    <span class="label label-primary" ng-bind="contact.contacts.length"></span>
+                                </div><!-- /.box-tools -->
+                            </div><!-- /.box-header -->
+                            <div class="box-body">
+                                <ul class="todo-list">
+                                    <li ng-repeat="detail in contact.contacts">
+                                        <a href="#"><i class="fa fa-star-o text-yellow"></i></a>
+                                        <!-- todo text -->
+                                        <img class="img-small img-circle img-bordered-sm" ng-src="{{'/public/dist/img/team_default.png'}}" alt="User Image">
+                                        <a ui-sref="root.contact-board({id: '{{detail.id}}'})"><span class="text">{{detail.firstName + ' '+ detail.lastName}}</span></a>
+                                        <small>--{{detail.title}}</small>
+                                        <!-- General tools such as edit or delete-->
+                                        <div class="tools">
+                                            <i class="fa fa-plus-square" ng-click="inviteContact(detail)"></i>
+                                            <i class="fa fa-paperclip"></i>
+                                            <i class="fa fa-commenting-o"></i>
+                                            <i class="fa fa-tty"></i>
+                                            <i class="fa fa-envelope-o"></i>
+                                            <i class="fa fa-edit" ng-click="editContact(detail)"></i>
+                                            <i class="fa fa-trash-o"></i>
+                                        </div>
+                                    </li>
+                                    <li class="pull-right">
+                                        <a href="" ng-click="loadMore(contact.id, contact.contacts.length)">LoadMore...</a>
+                                    </li>
+                                </ul><!-- /.ui -->
+                            </div><!-- /.box-body -->
+                        </div><!-- /.box -->
+
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer no-padding">
+
+                    </div>
+                </div>
+                <!-- /. box -->
+            </div>
+
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Filter</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" ng-click="isFilterCollapsed=!isFilterCollapsed" ng-init="isFilterCollapsed=true">
+                            <i ng-class="{'fa fa-plus':isFilterCollapsed==true,'fa fa-minus': isFilterCollapsed==false}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div uib-collapse="isFilterCollapsed">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><input type="checkbox" value="" name=""> recent view<span class="label label-warning pull-right">100+</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> following<span class="label label-warning pull-right">15</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> connected <span class="label label-warning pull-right">65</span></a>
+                        </li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> star<span class="label label-warning pull-right">35</span></a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /. box -->
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Sort</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" ng-click="isSortCollapsed=!isSortCollapsed" ng-init="isSortCollapsed=true">
+                            <i ng-class="{'fa fa-plus':isSortCollapsed==true,'fa fa-minus':isSortCollapsed==false}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div uib-collapse="isSortCollapsed">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a ng-click="getSortedList('lastName')" ng-init="nameOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': nameOrder=='asc','fa fa-sort-desc text-light-blue': nameOrder=='desc'}"></i> Last Name
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="getSortedList('createDate')" ng-init="createOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': createOrder=='asc','fa fa-sort-desc text-light-blue': createOrder=='desc'}"></i> Create Date
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="getSortedList('connectDate')" ng-init="conOrder='asc'">
+                                <i ng-class="{'fa fa-sort-up text-light-blue': conOrder=='asc','fa fa-sort-desc text-light-blue': conOrder=='desc'}"></i> Connect Date
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Pin List</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">
+                            <i class="fa fa-comments"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Email">
+                            <i class="fa fa-envelope"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><i class="fa fa-paperclip text-yellow"></i> Alen Adon</a></li>
+                        <li><a href="#"><i class="fa fa-paperclip text-yellow"></i> Jack Lee</a></li>
+                        <li><a href="#"><i class="fa fa-paperclip text-yellow"></i> Bruce Pan</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->
+
+<!--Modal -->
+<script type="text/ng-template" id="contactCreator.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Contact</h3>
+    </div>
+    <div class="modal-body">
+
+        <div class="box-body">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">First Name</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Short Name" ng-model="info.firstName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Last Name</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Last Name" ng-model="info.lastName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Title</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Title" ng-model="info.title">
+                    </div>
+                </div>
+
+                <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Email</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Email" ng-model="info.email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Phone</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Phone" ng-model="info.phone">
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Address</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Address" ng-model="info.homeAddress">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Tags</label>
+
+                    <div class="col-sm-8">
+                        <tags-input ng-model="info.tags" placeholder="Tags" min-length="2"></tags-input>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label inline">Privilege</label>
+                    <div class="col-sm-8">
+                        <select ng-model="info.visibleList[0].visType" ng-options="privilege for privilege in privileges"></select>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-repeat="field in info.customFields">
+                    <label class="col-sm-4 control-label">{{field.fieldName}}</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="{{field.fieldName}}" type="text" placeholder="{{field.fieldName}}" ng-model="field.fieldValue">
+                    </div>
+                </div>
+                <hr>
+            </form>
+
+            <div class="pull-right">
+                <button class="btn btn-default" ng-click="openFieldModal()">Edit Custom Fields</button>
+            </div>
+
+            <div class="form-group">
+
+                <table class="table table-bordered table-hover table-condensed">
+                    <tr style="font-weight: bold">
+                        <td style="width:30%">ID</td>
+                        <td style="width:30%">Account</td>
+                        <td style="width:25%">Source</td>
+                        <td style="width:20%">Edit</td>
+                    </tr>
+                    <tr ng-repeat="map in info.salesMap">
+                        <td>
+                            <!-- editable username (text with validation) -->
+                                <span editable-text="map.id" e-name="id" e-form="rowform" onbeforesave="checkName($data, map.id)" e-required>
+                                  {{ map.id || 'empty' }}
+                                </span>
+                        </td>
+                        <td>
+                            <!-- editable username (text with validation) -->
+                                <span editable-text="map.account" e-name="account" e-form="rowform" onbeforesave="checkName($data, map.id)" e-required>
+                                  {{ map.account || 'empty' }}
+                                </span>
+                        </td>
+                        <td>
+                            <!-- editable status (select-local) -->
+                                <span editable-select="map.source" e-name="source" e-form="rowform" e-ng-options="s.value as s.text for s in statuses">
+                                  {{ showStatus(map) }}
+                                </span>
+                        </td>
+                        <td style="white-space: nowrap">
+                            <!-- form -->
+                            <form editable-form name="rowform" onbeforesave="saveMap($data, map.id)" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == map">
+                                <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
+                                    save
+                                </button>
+                                <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">
+                                    cancel
+                                </button>
+                            </form>
+                            <div class="buttons" ng-show="!rowform.$visible">
+                                <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                                <button class="btn btn-danger" ng-click="removeMap($index)">del</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <button class="btn btn-default" ng-click="addMap()">Add Mapping</button>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Save</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<!--Modal -->
+<script type="text/ng-template" id="contactInvite.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Invite Contact</h3>
+    </div>
+    <div class="modal-body">
+
+        <div class="box-body">
+            Confirm invite this user?
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Invite</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<!--File upload Modal -->
+<script type="text/ng-template" id="fileUpload.html">
+    <div class="modal-header">
+        <h3 class="modal-title">File Upload</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <h4>Select files</h4>
+
+                <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                <!--Multiple-->
+                <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
+
+                <!--Single-->
+                <!--<input type="file" nv-file-select="" uploader="uploader" />-->
+                <!--<h4>Status</h4>-->
+                <!--<div class="btn-group">-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>-->
+                <!--</div>-->
+
+                <h4>Privilege</h4>
+                <select ng-model="privilege" ng-options="privilege for privilege in privileges"></select>
+            </div>
+
+            <div class="col-md-9" style="margin-bottom: 40px">
+
+                <h3>Upload queue</h3>
+                <p>Queue length: {{ uploader.queue.length }}</p>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="50%">Name</th>
+                        <th ng-show="uploader.isHTML5">Size</th>
+                        <th ng-show="uploader.isHTML5">Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in uploader.queue">
+                        <td><strong>{{ item.file.name }}</strong></td>
+                        <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                        <td ng-show="uploader.isHTML5">
+                            <div class="progress" style="margin-bottom: 0;">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                            <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                            <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        </td>
+                        <td nowrap>
+                            <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                <span class="glyphicon glyphicon-upload"></span> Upload
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                            </button>
+                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                <span class="glyphicon glyphicon-trash"></span> Remove
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <div>
+                        Queue progress:
+                        <div class="progress" style="">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                        <span class="glyphicon glyphicon-upload"></span> Upload all
+                    </button>
+                    <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+                    </button>
+                    <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                        <span class="glyphicon glyphicon-trash"></span> Remove all
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>
+<script type="text/ng-template" id="formField.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Custom Form Fields</h3>
+    </div>
+    <div class="modal-body">
+        <div class="box-body">
+                <table class="table table-bordered table-hover table-condensed">
+                    <thead>
+                        <thead>
+                            <tr>
+                                <th style="width:30%">Name</th>
+                                <th style="width:30%">Value</th>
+                                <th style="width:30%">Edit</th>
+                            </tr>
+                        </thead>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="field in newCustomFields">
+                            <td><input type="text" placeholder="Input Name" ng-model="field.fieldName" required></td>
+                            <td><input type="text" placeholder="Input Value" ng-model="field.fieldValue"></td>
+                            <td>
+                                <button class="btn btn-danger" ng-click="removeField($index)">Del</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="addField()">Add New Field</button>
+        <button class="btn btn-primary" ng-click="saveFields()">Save</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>

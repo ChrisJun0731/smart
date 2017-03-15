@@ -1,0 +1,226 @@
+package com.sumridge.smart.service;
+
+import com.sumridge.smart.bean.ResultBean;
+import com.sumridge.smart.bean.TeamNameBean;
+import com.sumridge.smart.bean.TeamUserInfo;
+import com.sumridge.smart.bean.TokenBean;
+import com.sumridge.smart.dao.UserInfoRepository;
+import com.sumridge.smart.dao.UserInviteRepository;
+import com.sumridge.smart.entity.ChatUserInfo;
+import com.sumridge.smart.entity.UserInfo;
+import com.sumridge.smart.entity.UserInvite;
+import com.sumridge.smart.query.ChatUserQuery;
+import com.sumridge.smart.query.FileTraceQuery;
+import com.sumridge.smart.query.TeamQuery;
+import com.sumridge.smart.query.UserQuery;
+import com.sumridge.smart.util.FileUtil;
+import com.sumridge.smart.util.StringUtil;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.*;
+
+/**
+ * Created by liu on 16/3/29.
+ */
+@Service
+public class UserInfoService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserInfoService.class);
+    @Autowired
+    private UserInfoRepository userInfoRepository;
+    @Autowired
+    private UserQuery userQuery;
+    @Autowired
+    private ChatUserQuery chatUserQuery;
+
+    @Autowired
+    private BoardService boardService;
+
+    //add by zj
+    @Autowired
+    private CacheService cacheService;
+    @Autowired
+    private FileTraceQuery fileTraceQuery;
+    @Autowired
+    TeamQuery teamQuery;
+    @Autowired
+    private UserInviteRepository userInviteRepository;
+
+    public ResultBean saveUserInfo(UserInfo userInfo){
+        userInfo.setInitial(StringUtil.getInitChar(userInfo.getFirstName()));
+        userInfoRepository.save(userInfo);
+        ResultBean rs = new ResultBean();
+        rs.setSuccess(true);
+        return rs;
+    }
+
+    public UserInfo findUserInfo(String email) {
+
+        UserInfo info = userInfoRepository.findByEmail(email);
+
+       return info;
+    }
+
+    public ResultBean getUserList(UserInfo userInfo) {
+
+        return ResultBean.getSuccessResult(userQuery.queryList(userInfo.getTeamIdSet()));
+    }
+
+    public ResultBean saveNewUserInfo(TeamUserInfo userInfo) {
+        userInfo.setPassword(new BCryptPasswordEncoder().encode(userInfo.getPassword()));
+        Set<String> teamSet = new HashSet<>();
+        for(TeamNameBean bean : userInfo.getTeam()) {
+            teamSet.add(bean.getId());
+        }
+        userInfo.setTeamIdSet(teamSet);
+        saveUserInfo(userInfo);
+        boardService.saveUserBoard(userInfo);
+        return ResultBean.getSuccessResult();
+    }
+
+    public TokenBean findUserChatToken(UserInfo userInfo) {
+        TokenBean bean = new TokenBean();
+        String token = chatUserQuery.queryTokenByUserId(userInfo.getId());
+        if(token == null) {
+            token = genToken(userInfo);
+        }
+        bean.setToken(token);
+        return bean;
+    }
+
+    private String genToken(UserInfo userInfo) {
+        String token = UUID.randomUUID().toString();
+        token = Base64Utils.encodeToString(token.getBytes());
+        LOGGER.info("token:"+token);
+        ChatUserInfo chatUser = new ChatUserInfo();
+        chatUser.setActive(true);
+        chatUser.setCreatedAt(new Date());
+        //emails
+        Map<String, Object> emails = new HashMap<>();
+        emails.put("address", userInfo.getEmail());
+        emails.put("verified", Boolean.TRUE);
+        chatUser.setEmails(Arrays.asList(emails));
+        //
+        chatUser.setId(userInfo.getId());
+        chatUser.setName(userInfo.getFirstName()+" "+userInfo.getLastName());
+        chatUser.setRoles(Arrays.asList("user"));
+        chatUser.setStatusDefault("online");
+        chatUser.setType("user");
+        chatUser.setUsername(userInfo.getFirstName().toLowerCase()+"."+userInfo.getLastName().toLowerCase());
+
+        Map<String,Object> services = new HashMap<>();
+        TokenBean bean = new TokenBean();
+        bean.setToken(token);
+        services.put("iframe", bean);
+        chatUser.setServices(services);
+        chatUserQuery.insertChatUser(chatUser);
+        return token;
+    }
+
+    //add by zj 16/9/10
+    public ResultBean saveFile(UserInfo userinfo, MultipartFile file){
+
+        if (!checkValidUploadFile(file)) {
+            //check file value
+            try {
+                Reader reader = new InputStreamReader(file.getInputStream());
+                CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withHeader().withDelimiter(','));
+                List<UserInfo> userList = new ArrayList<>();
+                String initialPassword = "0000";
+                try {
+                    for (final CSVRecord record : parser) {
+                        LOGGER.info(record.toString());
+//                        LOGGER.info("redis cache:" + cacheService.getValue("test"));
+                        //add by zj
+                        UserInfo user = new UserInfo();
+                        user.setUId(record.get("Uid"));
+                        user.setUserId(record.get("CrmUserId"));
+                        user.setFirstName(record.get("First Name"));
+                        user.setLastName(record.get("Last Name"));
+                        user.setEmail(record.get("Email"));
+                        user.setPassword(initialPassword);
+                        user.setInitial(StringUtil.getInitChar(user.getFirstName()));
+                        Set<String> teamIdSet = new HashSet<>();
+                        String[] teamNames = record.get("Team Name").split(",");
+                        for(String teamName:teamNames)
+                        {
+                            String id = teamQuery.queryId(teamName.trim());
+                            if(null != id)
+                                teamIdSet.add(id);
+                            else
+                                throw new Exception("导入的公司名称不存在");
+                        }
+                        user.setTeamIdSet(teamIdSet);
+                        userList.add(user);
+                    }
+                    for(UserInfo user:userList)
+                    {
+                        userQuery.addUserInfo(user);
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                finally {
+                    parser.close();
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return ResultBean.getSuccessResult();
+
+        } else {
+
+            return ResultBean.geFailResult(null, "file upload failed");
+        }
+    }
+
+    //add by zj 16/9/10
+    private boolean checkValidUploadFile(MultipartFile file) {
+        try {
+            String md5Str = FileUtil.toMD5String(file.getInputStream());
+            return fileTraceQuery.isExsit(md5Str, "sale-info", "s");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    public boolean checkUserExsit(String email) {
+        return userInfoRepository.findByEmail(email) != null;
+    }
+
+    public UserInfo getInviteUser(String id) {
+        UserInvite invite = userInviteRepository.findOne(id);
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setEmail(invite.getEmail());
+        userInfo.setPassword(new BCryptPasswordEncoder().encode("123@"));
+        userInfo.setRole("CUSTOMER");
+//        userInfo.setUserId("1001");
+//        userInfo.setDescription("test desc");
+        userInfo.setFirstName(invite.getFirstName());
+        userInfo.setLastName(invite.getLastName());
+        userInfo.setPhone(invite.getPhone());
+        userInfo.setPhoto(null);
+//        userInfo.setTeamIdSet(Stream.of(team.getId()).collect(Collectors.toSet()));
+        userInfo.setCreateDate(new Date());
+        userInfoRepository.save(userInfo);
+
+        userInviteRepository.delete(id);
+        return userInfo;
+    }
+}

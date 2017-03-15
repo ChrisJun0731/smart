@@ -1,0 +1,543 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>Team&User</small>
+    </h1>
+</section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-9">
+            <uib-tabset active="active" class="nav-tabs-custom">
+                <!--<div class="nav-tabs-custom">-->
+                <!--<ul class="nav nav-tabs">-->
+                <!--<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Accounts</a></li>-->
+                <!--<li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Company</a></li>-->
+                <!--<li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-plus"></i></a></li>-->
+                <!--</ul>-->
+                <uib-tab index="0" heading="Users">
+
+
+                    <div class="box box-widget">
+                        <div class="box-header">
+                            <h3 class="box-title">Users</h3>
+
+                            <div class="box-tools pull-right">
+                                <div class="btn-group">
+                                    <input type="text" class="form-control input-sm" placeholder="Search Users">
+                                    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                </div>
+                                <div class="btn-group" uib-dropdown>
+                                    <button id="single-button" type="button" class="btn btn-success"  uib-dropdown-toggle><i class="fa fa-plus"></i></button>
+                                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                        <li role="menuitem"><a href="" ng-click="openUserModal({})">Add User</a></li>
+                                        <li class="divider"></li>
+                                        <li role="menuitem"><a href="" ng-click="openUploadModal('lg')">Import From File</a></li>
+                                        <li class="divider"></li>
+                                        <li role="menuitem"><a href="common/download?filename=crm-user.csv">Download User Template</a></li>
+                                    </ul>
+                                </div>
+                                <!-- <button type="button" class="btn btn-success"><i class="fa fa-plus"></i></button> -->
+                            </div>
+                            <!-- /.box-tools -->
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding">
+                            <div class="mailbox-controls">
+                                <!-- Check all button -->
+
+
+                                <!-- /.btn-group -->
+
+                                <!--<div class="btn-group">-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>-->
+                                <!--</div>-->
+                                <!--1-50/200-->
+                                <!--&lt;!&ndash; /.btn-group &ndash;&gt;-->
+                                <!--<div class="pull-right">-->
+                                <!--<p>200 accounts sorted by last name<i class="fa fa-sort-amount-desc"></i></p>-->
+
+                                <!--</div>-->
+                                <!-- /.pull-right -->
+                            </div>
+                            <div class="box-body">
+
+                                <div class="box" ng-repeat="user in userList">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" ng-bind="user.id"></h3>
+                                        <div class="box-tools pull-right">
+                                            <!-- Buttons, labels, and many other things can be placed here! -->
+                                            <!-- Here is a label for example -->
+                                            <span class="label label-primary" ng-bind="user.size"></span>
+                                        </div><!-- /.box-tools -->
+                                    </div><!-- /.box-header -->
+                                    <div class="box-body">
+                                        <ul class="todo-list">
+                                            <li ng-repeat="detail in user.accounts">
+                                                <a href="#"><i class="fa fa-star-o text-yellow"></i></a>
+                                                <!-- todo text -->
+                                                <img class="img-small img-circle img-bordered-sm" ng-src="{{'/public/dist/img/team_default.png'}}" alt="User Image">
+                                                <a href="" ng-click="goBoard(detail)"><span class="text">{{detail.firstName + ' '+ detail.lastName}}</span></a>
+                                                <small>--{{detail.description}}</small>
+                                                <!-- General tools such as edit or delete-->
+                                                <div class="tools">
+                                                    <i class="fa fa-paperclip"></i>
+                                                    <i class="fa fa-commenting-o"></i>
+                                                    <i class="fa fa-tty"></i>
+                                                    <i class="fa fa-envelope-o"></i>
+                                                    <!--only for admin-->
+                                                    <i class="fa fa-trash-o"></i>
+                                                </div>
+                                            </li>
+
+                                        </ul><!-- /.ui -->
+                                    </div><!-- /.box-body -->
+                                </div><!-- /.box -->
+
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer no-padding">
+
+                            </div>
+                        </div>
+                        <!-- /. box -->
+                    </div>
+                </uib-tab>
+                <!-- /.tab-pane -->
+                <uib-tab index="1" heading="Teams">
+                    <div class="box box-widget">
+                        <div class="box-header">
+                            <h3 class="box-title">Teams</h3>
+
+                            <div class="box-tools pull-right">
+                                <div class="btn-group">
+                                    <input type="text" class="form-control input-sm" placeholder="Search Teams">
+                                    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                </div>
+                                <div class="btn-group" uib-dropdown>
+                                    <button id="add-company-button" type="button" class="btn btn-success"  uib-dropdown-toggle><i class="fa fa-plus"></i></button>
+                                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="add-company-button">
+                                        <li role="menuitem"><a href="" ng-click="openTeamModal({})">Add Team</a></li>
+                                        <li class="divider"></li>
+                                        <li role="menuitem"><a href="">Import From File</a></li>
+                                    </ul>
+                                </div>
+                                <!-- <button type="button" class="btn btn-success"><i class="fa fa-plus"></i></button> -->
+                            </div>
+                            <!-- /.box-tools -->
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding">
+                            <div class="mailbox-controls">
+                                <!-- Check all button -->
+
+
+                                <!-- /.btn-group -->
+
+                                <!--<div class="btn-group">-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>-->
+                                <!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>-->
+                                <!--</div>-->
+                                <!--1-50/200-->
+                                <!--&lt;!&ndash; /.btn-group &ndash;&gt;-->
+                                <!--<div class="pull-right">-->
+                                <!--<p>200 accounts sorted by last name<i class="fa fa-sort-amount-desc"></i></p>-->
+
+                                <!--</div>-->
+                                <!-- /.pull-right -->
+                            </div>
+                            <div class="box-body">
+
+                                <div class="box" ng-repeat="team in teamList">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title" ng-bind="team.id"></h3>
+                                        <div class="box-tools pull-right">
+                                            <!-- Buttons, labels, and many other things can be placed here! -->
+                                            <!-- Here is a label for example -->
+                                            <span class="label label-primary" ng-bind="team.size"></span>
+                                        </div><!-- /.box-tools -->
+                                    </div><!-- /.box-header -->
+                                    <div class="box-body">
+                                        <ul class="todo-list">
+                                            <li ng-repeat="detail in team.accounts">
+                                                <a href=""><i class="fa fa-star-o text-yellow"></i></a>
+                                                <!-- todo text -->
+                                                <img class="img-small img-circle img-bordered-sm" ng-src="{{'/public/dist/img/team_default.png'}}" alt="User Image">
+                                                <a href="" ng-click="goBoard(detail)"><span class="text" ng-bind="detail.teamName"></span></a>
+                                                <small>--{{detail.description}}</small>
+                                                <!-- General tools such as edit or delete-->
+                                                <div class="tools">
+                                                    <i class="fa fa-paperclip"></i>
+                                                    <i class="fa fa-edit" ng-click="editTeam(detail)"></i>
+                                                    <i class="fa fa-users" ng-click="editMember(detail)"></i>
+                                                    <i class="fa fa-trash-o"></i>
+                                                </div>
+                                            </li>
+
+
+
+                                        </ul><!-- /.ui -->
+                                    </div><!-- /.box-body -->
+                                </div><!-- /.box -->
+
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer no-padding">
+
+                            </div>
+                        </div>
+                        <!-- /. box -->
+                    </div>
+                </uib-tab>
+                <!-- /.tab-pane -->
+
+                <!-- /.tab-content -->
+                <!--</div>-->
+            </uib-tabset>
+
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Filter</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding" style="display: none;">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><input type="checkbox" value="" name=""> recent view<span class="label label-warning pull-right">100+</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> following<span class="label label-warning pull-right">15</span></a></li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> connected <span class="label label-warning pull-right">65</span></a>
+                        </li>
+                        <li><a href="#"><input type="checkbox" value="" name=""> star<span class="label label-warning pull-right">35</span></a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /. box -->
+            <div class="box box-solid collapsed-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Sort</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding" style="display: none;">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Last Name</a></li>
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Create Date</a></li>
+                        <li><a href="#"><i class="fa fa-sort text-light-blue"></i> Connect Date</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Pin List</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="statistics">
+                            <i class="fa fa-line-chart"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Clear">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#"><i class="fa fa-paperclip text-yellow"></i>JPMorgan</a></li>
+                        <li><a href="#"><i class="fa fa-paperclip text-yellow"></i> Goldman Sachs</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->
+<!--Modal -->
+<script type="text/ng-template" id="userCreator.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit User</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">First Name</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="First Name" ng-model="info.firstName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Last Name</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Last Name" ng-model="info.lastName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Password</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Password" ng-model="info.password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Email</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Email" ng-model="info.email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Phone</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Phone" ng-model="info.phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Description</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Description" ng-model="info.description">
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Sales ID</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Sales ID" ng-model="info.userId">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Team</label>
+
+                    <div class="col-sm-8">
+                        <tags-input ng-model="info.team" display-property="teamName" key-property="id" placeholder="Team" min-length="1" min-tags="1" max-tags="1" add-from-autocomplete-only="true">
+                            <auto-complete source="loadTeam($query)" min-length="0"></auto-complete>
+                        </tags-input>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Save</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+<!--Modal -->
+<script type="text/ng-template" id="teamCreator.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Team</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Team Name</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Team Name" ng-model="info.teamName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Description</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" placeholder="Description" ng-model="info.description">
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Tags</label>
+
+                    <div class="col-sm-8">
+                        <tags-input ng-model="info.tags" placeholder="Tags" min-length="2"></tags-input>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Save</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<!--Modal -->
+<script type="text/ng-template" id="team-member.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Team Member</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+
+            <table class="table table-bordered table-hover table-condensed">
+                <tr style="font-weight: bold">
+                    <td style="width:40%">Email</td>
+                    <td style="width:35%">Role</td>
+                    <td style="width:25%">Edit</td>
+                </tr>
+                <tr ng-repeat="map in info.userList">
+                    <td>
+                        <!-- editable username (text with validation) -->
+                                <span editable-text="map.text" e-name="text" e-form="rowform" onbeforesave="checkName($data, map.text)" e-required>
+                                  {{ map.text || 'empty' }}
+                                </span>
+                    </td>
+                    <td>
+                        <!-- editable status (select-local) -->
+                                <span editable-select="map.role" e-name="role" e-form="rowform" e-ng-options="s.value as s.text for s in statuses">
+                                  {{ showStatus(map) }}
+                                </span>
+                    </td>
+                    <td style="white-space: nowrap">
+                        <!-- form -->
+                        <form editable-form name="rowform" onbeforesave="saveMap($data, map.id)" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == map">
+                            <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
+                                save
+                            </button>
+                            <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">
+                                cancel
+                            </button>
+                        </form>
+                        <div class="buttons" ng-show="!rowform.$visible">
+                            <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                            <button class="btn btn-danger" ng-click="removeMap($index)">del</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <button class="btn btn-default" ng-click="addMap()">Add Member</button>
+        </div>
+
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>
+
+<!--File upload Modal -->
+<script type="text/ng-template" id="fileUpload.html">
+    <div class="modal-header">
+        <h3 class="modal-title">File Upload</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <h4>Select files</h4>
+
+                <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                <!--Multiple-->
+                <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
+
+                <!--Single-->
+                <!--<input type="file" nv-file-select="" uploader="uploader" />-->
+                <!--<h4>Status</h4>-->
+                <!--<div class="btn-group">-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'public'">Public</label>-->
+                <!--<label class="btn btn-primary" ng-model="radioModel" uib-btn-radio="'private'">Private</label>-->
+                <!--</div>-->
+            </div>
+
+            <div class="col-md-9" style="margin-bottom: 40px">
+
+                <h3>Upload queue</h3>
+                <p>Queue length: {{ uploader.queue.length }}</p>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="50%">Name</th>
+                        <th ng-show="uploader.isHTML5">Size</th>
+                        <th ng-show="uploader.isHTML5">Progress</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in uploader.queue">
+                        <td><strong>{{ item.file.name }}</strong></td>
+                        <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                        <td ng-show="uploader.isHTML5">
+                            <div class="progress" style="margin-bottom: 0;">
+                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                            <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                            <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        </td>
+                        <td nowrap>
+                            <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                <span class="glyphicon glyphicon-upload"></span> Upload
+                            </button>
+                            <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                            </button>
+                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                <span class="glyphicon glyphicon-trash"></span> Remove
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <div>
+                        Queue progress:
+                        <div class="progress" style="">
+                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                        <span class="glyphicon glyphicon-upload"></span> Upload all
+                    </button>
+                    <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
+                    </button>
+                    <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                        <span class="glyphicon glyphicon-trash"></span> Remove all
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Close</button>
+    </div>
+</script>

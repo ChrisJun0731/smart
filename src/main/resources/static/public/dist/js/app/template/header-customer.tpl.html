@@ -1,0 +1,170 @@
+
+<!-- /.content-wrapper -->
+<header class="main-header">
+
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top" role="navigation">
+        <a ui-sref="root.home" class="navbar-brand"><b>Smart</b>CRM</a>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <!-- <li class="active"><a href="">Home <span class="sr-only">(current)</span></a></li> -->
+                <li><a ui-sref="root.dashboard">Dashboard</a></li>
+                <li><a ui-sref="root.match">Suggestion</a></li>
+                <li><a ui-sref="root.match">Trade</a></li>
+                <li><a ui-sref="root.account">Market</a></li>
+                <li class="dropdown" uib-dropdown>
+                    <a href="" class="dropdown-toggle" uib-dropdown-toggle id="menu-dropdown">Communication <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" uib-dropdown-menu aria-labelledby="menu-dropdown">
+                        <li><a ui-sref="root.email">Email</a></li>
+                        <li class="divider"></li>
+                        <li><a ui-sref="root.chat">Chatting</a></li>
+                        <li class="divider"></li>
+                        <li><a href="">Calls</a></li>
+                        <li class="divider"></li>
+                        <li><a href="">Text</a></li>
+                    </ul>
+                </li>
+                <li><a ui-sref="root.report">Report</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="navbar-search-input" placeholder="Search">
+                </div>
+            </form>
+        </div>
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                <li class="dropdown messages-menu" uib-dropdown>
+                    <a href="" class="dropdown-toggle" uib-dropdown-toggle id="message-dropdown">
+                        <i class="fa fa-envelope-o"></i>
+                        <span class="label label-success" ng-bind="messages.length">0</span>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="message-dropdown">
+                        <li class="header">You have {{ messages.length }} messages</li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu">
+                                <li ng-repeat="msg in messages"><!-- start message -->
+                                    <a href="">
+                                        <div class="pull-left">
+                                            <img ng-src="{{msg.fromImg||'/public/dist/img/user_default.png'}}" class="img-circle" alt="User Image">
+                                        </div>
+                                        <h4>
+                                            {{msg.from}}
+                                            <small><i class="fa fa-clock-o"></i> <span am-time-ago="msg.time"></span></small>
+                                        </h4>
+                                        <p ng-bind="msg.message"></p>
+                                    </a>
+                                </li>
+                                <!-- end message -->
+                            </ul>
+                        </li>
+                        <li class="footer"><a href="">See All Messages</a></li>
+                    </ul>
+                </li>
+                <!-- Notifications: style can be found in dropdown.less -->
+                <li class="dropdown notifications-menu" uib-dropdown>
+                    <a href="" class="dropdown-toggle" uib-dropdown-toggle id="notify-dropdown">
+                        <i class="fa fa-bell-o"></i>
+                        <span class="label label-warning" ng-bind="notifications.length">0</span>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="notify-dropdown">
+                        <li class="header">You have {{ notifications.length }} notifications</li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu">
+                                <li ng-repeat="notification in notifications">
+                                    <a href="">
+                                        <i class="fa fa-users text-aqua"></i> {{notification}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer"><a href="">View all</a></li>
+                    </ul>
+                </li>
+                <!-- Tasks: style can be found in dropdown.less -->
+                <li class="dropdown tasks-menu" uib-dropdown>
+                    <a href="" class="dropdown-toggle" uib-dropdown-toggle id="task-dropdown">
+                        <i class="fa fa-flag-o"></i>
+                        <span class="label label-danger" ng-bind="tasks.length">0</span>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="task-dropdown">
+                        <li class="header">You have {{tasks.length}} tasks</li>
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu">
+                                <li><!-- Task item -->
+                                    <a href="" ng-repeat="task in tasks">
+                                        <h3>
+                                            {{task.title}}
+                                            <small class="pull-right">{{task.process}}%</small>
+                                        </h3>
+                                        <div class="progress xs">
+                                            <div class="progress-bar progress-bar-aqua" ng-style="{width: task.process + '%'}" role="progressbar" aria-valuenow="{{task.process}}" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="sr-only">{{task.process}}% Complete</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <!-- end task item -->
+
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="">View all tasks</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- User Account: style can be found in dropdown.less -->
+                <li class="dropdown user user-menu" uib-dropdown>
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown" uib-dropdown-toggle id="user-dropdown">
+                        <img ng-src="{{userInfo.photo||'/public/dist/img/user_default.png'}}" class="user-image" alt="User Image">
+                        <span class="hidden-xs">{{userInfo.firstName + ' '+ userInfo.lastName}}</span>
+                    </a>
+                    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="user-dropdown">
+                        <!-- User image -->
+                        <li class="user-header">
+                            <img ng-src="{{userInfo.photo||'/public/dist/img/user_default.png'}}" class="img-circle" alt="User Image">
+
+                            <p>
+                                {{userInfo.firstName + ' '+ userInfo.lastName}}
+                                <small>Member since {{userInfo.createDate | amDateFormat:'MMM.YYYY'}}</small>
+                            </p>
+                        </li>
+                        <!-- Menu Body -->
+                        <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-4 text-center">
+                                    <a href="">Followers</a>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <a ui-sref="root.team">Users</a>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <a href="">Following</a>
+                                </div>
+                            </div>
+                            <!-- /.row -->
+                        </li>
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a ui-sref="root.profile" class="btn btn-default btn-flat">Profile</a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Control Sidebar Toggle Button -->
+                <li>
+                    <a href="config.html"><i class="fa fa-gears"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

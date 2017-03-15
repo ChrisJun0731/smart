@@ -1,0 +1,49 @@
+package com.sumridge.smart.query;
+
+import com.mongodb.BasicDBObject;
+import com.sumridge.smart.bean.CommonAggBean;
+import com.sumridge.smart.entity.MatchInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+/**
+ * Created by liu on 16/11/2.
+ */
+@Component
+public class MatchQuery {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public List<MatchInfo> getMatchInfoList(String creator) {
+
+        Query query = Query.query(Criteria.where("creator").is(creator));
+
+        return mongoTemplate.find(query, MatchInfo.class);
+
+
+    }
+
+    public List<CommonAggBean> getBaseAggList() {
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.unwind("salesMap"),
+                Aggregation.group("salesMap.cusip").push(new BasicDBObject("price", "$salesMap.price").append("quantity", "$salesMap.quantity")
+                        .append("side", "$salesMap.side")
+                        .append("creator","$creator")
+                        .append("createDate","$createDate")).as("detail")
+                .count().as("count"));
+
+        AggregationResults<CommonAggBean> result = mongoTemplate.aggregate(aggregation, MatchInfo.class, CommonAggBean.class);
+
+        return result.getMappedResults();
+    }
+
+}

@@ -1,0 +1,56 @@
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar" style="height: auto;">
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="active">
+                <a href="pages/calendar.html">
+                    <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-pie-chart"></i>
+                    <span>Report</span>
+                    <span class="label label-primary pull-right">4</span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a ui-sref="root.report.list"><i class="fa fa-circle-o"></i> Report List</a></li>
+                    <li><a ui-sref="root.report.new"><i class="fa fa-circle-o"></i> Create New</a></li>
+                    <li><a ui-sref="root.report.template"><i class="fa fa-circle-o"></i>Create A Report Template</a></li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-th"></i>
+                    <span>Admin</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="pages/charts/chartjs.html"><i class="fa fa-circle-o"></i> Report Setting</a></li>
+                    <li><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Config</a></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>
+
+<div ui-view></div>
+
+<!-- Content Header (Page header) -->
+<!--<section class="content-header">-->
+    <!--<h1>-->
+        <!--<small>Report</small>-->
+    <!--</h1>-->
+<!--</section>-->
+<!--<section class="content">-->
+
+    <!--<div class="row">-->
+        <!--<iframe src="http://localhost:5601/app/kibana#/dashboard/New-Dashboard?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:status-pie,panelIndex:1,row:1,size_x:3,size_y:2,type:visualization),(col:4,id:value-pie,panelIndex:2,row:1,size_x:3,size_y:2,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'New%20Dashboard',uiState:())" height="600" width="100%" frameborder="0" scrolling="no"></iframe>-->
+    <!--</div>-->
+<!--</section>-->
+<!-- /.content -->

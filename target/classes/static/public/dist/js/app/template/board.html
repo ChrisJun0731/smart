@@ -1,0 +1,333 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>{{board.boardName}}'s Board</small>
+    </h1>
+</section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <h3 class="widget-user-username" ng-bind="board.boardName"></h3>
+                    <h5 class="widget-user-desc" ng-bind="board.description"></h5>
+                </div>
+                <div class="widget-user-image">
+                    <img class="img-circle" ng-src="{{board.boardImg||'/public/dist/img/user_default.png'}}" alt="User Avatar">
+                </div>
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.followingCount"></h5>
+                                <span class="description-text">FOLLOWING</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.followerCount"></h5>
+                                <span class="description-text">FOLLOWERS</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4">
+                            <div class="description-block">
+                                <h5 class="description-header" ng-bind="board.documentCount"></h5>
+                                <span class="description-text">DOCUMENT</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                    <a href="" class="btn btn-primary btn-block nga-fast nga-collapse" ng-hide="board.follow" ng-click="followBoard()"><b>Follow</b></a>
+                    <a href="" class="btn btn-primary btn-block nga-fast nga-collapse" ng-show="board.follow" ng-click="unfollowBoard()"><b>UNFollow</b></a>
+                    <a href="" class="btn btn-primary btn-block" ng-show="board.editor"><b>Edit</b></a>
+                </div>
+            </div>
+            <!-- /.box -->
+
+        </div>
+        <!-- /.col -->
+        <div class="col-md-6">
+            <div class="nav-tabs-custom box box-primary">
+                <div class="box-body" ng-show="board.editor">
+                    <div class="form-group">
+                        <textarea class="form-control" rows="3" placeholder="Enter ..." ng-model="messageContent"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-info pull-right" ng-click="sendMessage()">Send</button>
+                </div>
+
+                <hr>
+                <uib-tabset active="active" class="nav-tabs-custom">
+                    <uib-tab index="0" heading="Activity">
+                        <!-- Post -->
+                        <div class="post clearfix">
+                            <!--<p>-->
+                            <!--Displaying-->
+                            <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">all activity <span class="caret"></span></a>-->
+                            <!--by <a href="#" class="dropdown-toggle" data-toggle="dropdown">1 filter <span class="caret"></span></a>-->
+
+                            <!--<span class="pull-right label label-danger">3 New Activity</span>-->
+                            <!--</p>-->
+                        </div>
+                        <!-- /.post -->
+
+                        <!-- Post Loop -->
+                        <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList">
+                            <div class="user-block">
+                                <img class="img-circle img-bordered-sm" ng-src="{{msg.userPhoto||'/public/dist/img/user_default.png'}}" alt="User Image">
+                                <span class="username">
+                                  <a href="#" ng-bind="msg.userName"></a>
+                                  <a href="#" class="pull-right btn-box-tool"><i class="fa fa-times"></i></a>
+                                </span>
+                                <span class="description">added note - <span am-time-ago="msg.time"></span></span>
+                            </div>
+                            <!-- /.user-block -->
+                            <p ng-bind="msg.content"></p>
+                            <!-- /.attachment-block -->
+                            <ul class="list-inline">
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a></li>
+                                <li><a href="#" class="link-black text-sm"><i class="fa fa-paperclip margin-r-5"></i> Pin</a>
+                                <li>
+                                    <a href="#" class="link-black text-sm">
+                                        <i class="fa fa-commenting-o margin-r-5" ng-click="commentFlag = !commentFlag" ng-init="commentFlag=false"></i> Comment
+                                    </a>
+                                </li>
+                                <li class="pull-right">
+                                    <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
+                                        ({{msg.comments}})</a></li>
+                            </ul>
+
+                            <input class="form-control input-sm" type="text" placeholder="Type a comment" ng-show="commentFlag">
+                        </div>
+                        <!-- /.post -->
+
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+                    <uib-tab index="1" heading="Timeline">
+                        <!-- The timeline -->
+                        <ul class="timeline timeline-inverse">
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-red">
+                          10 Feb. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-envelope bg-blue"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+
+                                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+
+                                    <div class="timeline-body">
+                                        Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                                        weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                                        jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                                        quora plaxo ideeli hulu weebly balihoo...
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-primary btn-xs">Read more</a>
+                                        <a class="btn btn-danger btn-xs">Delete</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-user bg-aqua"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                    <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
+                                    </h3>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-comments bg-yellow"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+
+                                    <div class="timeline-body">
+                                        Take me to your leader!
+                                        Switzerland is small and neutral!
+                                        We are more like Germany, ambitious and misunderstood!
+                                    </div>
+                                    <div class="timeline-footer">
+                                        <a class="btn btn-warning btn-flat btn-xs">View comment</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <!-- timeline time label -->
+                            <li class="time-label">
+                        <span class="bg-green">
+                          3 Jan. 2014
+                        </span>
+                            </li>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <li>
+                                <i class="fa fa-camera bg-purple"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+
+                                    <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+
+                                    <div class="timeline-body">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                        <img src="http://placehold.it/150x100" alt="..." class="margin">
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- END timeline item -->
+                            <li>
+                                <i class="fa fa-clock-o bg-gray"></i>
+                            </li>
+                        </ul>
+                    </uib-tab>
+                    <!-- /.tab-pane -->
+
+                    <!-- /.nav-tabs-custom -->
+                </uib-tabset>
+            </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3">
+            <!--file box-->
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Public Files</h3>
+
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li ng-repeat="file in fileList"><a href="#"><i class="fa fa-file-excel-o text-yellow"></i> {{file.fileName}}</a></li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a ui-sref="root.disk({id:board.id,path:'home'})" class="uppercase">View More Files</a>
+                </div>
+            </div>
+            <!-- /.box -->
+            <!--&lt;!&ndash; chat Box &ndash;&gt;-->
+            <!--<div class="box box-success direct-chat direct-chat-success">-->
+                <!--<div class="box-header with-border">-->
+                    <!--<h3 class="box-title">Direct Chat</h3>-->
+
+                    <!--<div class="box-tools pull-right">-->
+                        <!--<span data-toggle="tooltip" title="3 New Messages" class="badge bg-green">3</span>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>-->
+                        <!--</button>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="" data-widget="chat-pane-toggle" data-original-title="Contacts">-->
+                            <!--<i class="fa fa-comments"></i></button>-->
+                        <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-header &ndash;&gt;-->
+                <!--<div class="box-body">-->
+                    <!--&lt;!&ndash; Conversations are loaded here &ndash;&gt;-->
+                    <!--<div class="direct-chat-messages">-->
+                        <!--&lt;!&ndash; Message. Default to the left &ndash;&gt;-->
+                        <!--<div class="direct-chat-msg">-->
+                            <!--<div class="direct-chat-info clearfix">-->
+                                <!--<span class="direct-chat-name pull-left">Alexander Pierce</span>-->
+                                <!--<span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-info &ndash;&gt;-->
+                            <!--<img class="direct-chat-img" src="/public/dist/img/user1-128x128.jpg" alt="Message User Image">&lt;!&ndash; /.direct-chat-img &ndash;&gt;-->
+                            <!--<div class="direct-chat-text">-->
+                                <!--did you finish the big trade? That's unbelievable!-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-text &ndash;&gt;-->
+                        <!--</div>-->
+                        <!--&lt;!&ndash; /.direct-chat-msg &ndash;&gt;-->
+
+                        <!--&lt;!&ndash; Message to the right &ndash;&gt;-->
+                        <!--<div class="direct-chat-msg right">-->
+                            <!--<div class="direct-chat-info clearfix">-->
+                                <!--<span class="direct-chat-name pull-right">Sarah Bullock</span>-->
+                                <!--<span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-info &ndash;&gt;-->
+                            <!--<img class="direct-chat-img" src="/public/dist/img/user3-128x128.jpg" alt="Message User Image">&lt;!&ndash; /.direct-chat-img &ndash;&gt;-->
+                            <!--<div class="direct-chat-text">-->
+                                <!--You better believe it!-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; /.direct-chat-text &ndash;&gt;-->
+                        <!--</div>-->
+                        <!--&lt;!&ndash; /.direct-chat-msg &ndash;&gt;-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash;/.direct-chat-messages&ndash;&gt;-->
+
+                    <!--&lt;!&ndash; Contacts are loaded here &ndash;&gt;-->
+                    <!--<div class="direct-chat-contacts">-->
+                        <!--<ul class="contacts-list">-->
+                            <!--<li>-->
+                                <!--<a href="#">-->
+                                    <!--<img class="contacts-list-img" src="/public/dist/img/user1-128x128.jpg">-->
+
+                                    <!--<div class="contacts-list-info">-->
+                            <!--<span class="contacts-list-name">-->
+                              <!--Count Dracula-->
+                              <!--<small class="contacts-list-date pull-right">2/28/2015</small>-->
+                            <!--</span>-->
+                                        <!--<span class="contacts-list-msg">How have you been? I was...</span>-->
+                                    <!--</div>-->
+                                    <!--&lt;!&ndash; /.contacts-list-info &ndash;&gt;-->
+                                <!--</a>-->
+                            <!--</li>-->
+                            <!--&lt;!&ndash; End Contact Item &ndash;&gt;-->
+                        <!--</ul>-->
+                        <!--&lt;!&ndash; /.contatcts-list &ndash;&gt;-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash; /.direct-chat-pane &ndash;&gt;-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+                <!--<div class="box-footer">-->
+                    <!--<form action="#" method="post">-->
+                        <!--<div class="input-group">-->
+                            <!--<input type="text" name="message" placeholder="Type Message ..." class="form-control">-->
+                      <!--<span class="input-group-btn">-->
+                        <!--<button type="submit" class="btn btn-success btn-flat">Send</button>-->
+                      <!--</span>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; /.box-footer&ndash;&gt;-->
+            <!--</div>-->
+            <!-- / chat box -->
+
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+</section>
+<!-- /.content -->

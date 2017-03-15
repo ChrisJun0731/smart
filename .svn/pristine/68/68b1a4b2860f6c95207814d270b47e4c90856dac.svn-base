@@ -1,0 +1,171 @@
+package com.sumridge.smart.query;
+
+import com.mongodb.WriteResult;
+import com.sumridge.smart.entity.BoardInfo;
+import com.sumridge.smart.entity.TeamInfo;
+import com.sumridge.smart.entity.UserInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Created by liu on 16/4/8.
+ */
+@Component
+public class BoardQuery {
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public BoardInfo getHomeBoardBaseInfo(String ownerId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId));
+        query.fields().include("_id").include("followingCount").include("followingCount");
+        return mongoTemplate.findOne(query, BoardInfo.class);
+    }
+
+    public BoardInfo getHomeBoardFollowing(String ownerId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId));
+        query.fields().include("_id").include("followings");
+        return mongoTemplate.findOne(query, BoardInfo.class);
+    }
+
+    public List<BoardInfo> getTopBoards(Set<String> teamIdSet, String exclude) {
+
+        //TODO just fetch team visible
+        //fist step:select top 10 latest activity board
+        Query query = new Query();
+        query.addCriteria(Criteria.where("visibles").elemMatch(Criteria.where("visType").is("T").and("visId").in(teamIdSet).and("_id").ne(exclude)));
+        query.limit(8);
+        query.fields().include("_id").include("boardName").include("boardImg").include("updateDate");
+        query.with(new Sort("updateDate"));
+        List<BoardInfo> list = mongoTemplate.find(query, BoardInfo.class);
+
+        return list;
+    }
+
+    public BoardInfo getBoardInfo(String boardId, Set<String> teamIdSet) {
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(boardId).and("visibles.visType").is("T").and("visibles.visId").in(teamIdSet));
+        query.fields().exclude("followings").exclude("followers").exclude("visibles");
+
+        return mongoTemplate.findOne(query, BoardInfo.class);
+    }
+
+    public boolean isFollowing(String ownerId, String boardId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId).and("followings").is(boardId));
+        query.fields().include("_id");
+        return mongoTemplate.exists(query, BoardInfo.class);
+
+    }
+
+    public boolean followBoard(String boardId, Set<String> teamIdSet, String homeId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(homeId).and("followings").is(boardId));
+
+        if(mongoTemplate.exists(query, BoardInfo.class)){
+            return true;
+        } else {
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(boardId).and("visibles.visType").is("T").and("visibles.visId").in(teamIdSet));
+            Update update = new Update().addToSet("followers",homeId).inc("followerCount",1);
+            WriteResult result = mongoTemplate.updateFirst(query, update, BoardInfo.class);
+
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(homeId));
+            update = new Update().addToSet("followings",boardId).inc("followingCount",1);
+            WriteResult resultHome = mongoTemplate.updateFirst(query, update, BoardInfo.class);
+            return result.isUpdateOfExisting() && resultHome.isUpdateOfExisting();
+        }
+
+    }
+
+    public boolean unfollowBoard(String boardId, Set<String> teamIdSet, String homeId) {
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(homeId).and("followings").is(boardId));
+
+        if(mongoTemplate.exists(query, BoardInfo.class)){
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(boardId).and("visibles.visType").is("T").and("visibles.visId").in(teamIdSet));
+            Update update = new Update().pull("followers",homeId).inc("followerCount",-1);
+            WriteResult result = mongoTemplate.updateFirst(query, update, BoardInfo.class);
+
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(homeId));
+            update = new Update().pull("followings",boardId).inc("followingCount",-1);
+            WriteResult resultHome = mongoTemplate.updateFirst(query, update, BoardInfo.class);
+            return result.isUpdateOfExisting() && resultHome.isUpdateOfExisting();
+        } else {
+            return true;
+
+        }
+
+    }
+
+    public BoardInfo getConfirmBoard(String ownerId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId));
+        query.fields().include("_id").include("followerCount").include("boardName").include("description").include("boardImg").include("documentCount");
+        return mongoTemplate.findOne(query, BoardInfo.class);
+    }
+
+    public boolean checkExsitByOwnerId(String ownerId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId));
+
+        return mongoTemplate.exists(query, BoardInfo.class);
+    }
+
+    public void updateTeamBoardInfo(TeamInfo team) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(team.getId()));
+
+        Update update = new Update().set("boardName",team.getTeamName()).set("description",team.getDescription()).set("boardImg", team.getPhoto());
+        mongoTemplate.updateFirst(query, update, BoardInfo.class);
+    }
+
+    public void addEditor(String id, String teamId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(teamId));
+        Update update = new Update().addToSet("editors", id);
+        mongoTemplate.updateFirst(query, update, BoardInfo.class);
+    }
+
+    public void removeEditor(String id, String teamId) {
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(teamId));
+        Update update = new Update().pull("editors", id);
+        mongoTemplate.updateFirst(query, update, BoardInfo.class);
+    }
+
+    public String getBoardId(String ownerId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(ownerId));
+
+        query.fields().include("_id");
+
+        BoardInfo info = mongoTemplate.findOne(query, BoardInfo.class);
+
+        return info.getId();
+    }
+
+    public void updateUserBoardInfo(UserInfo userInfo) {
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("ownerId").is(userInfo.getId()));
+
+        Update update = new Update().set("boardName",userInfo.getFirstName()+" "+ userInfo.getLastName()).set("description",userInfo.getDescription()).set("boardImg", userInfo.getPhoto());
+        mongoTemplate.updateFirst(query, update, BoardInfo.class);
+    }
+}
