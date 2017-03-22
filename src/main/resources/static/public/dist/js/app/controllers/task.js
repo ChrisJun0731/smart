@@ -140,7 +140,6 @@ define(['../services/TaskService.js'], function () {
                 {name:'Workday', value:3},
                 {name:'Every week', value:4},
                 {name:'Every month', value:5},
-                {name:'Every year', value:6}
             ];
 
             $scope.taskTypes = [
@@ -152,6 +151,21 @@ define(['../services/TaskService.js'], function () {
                 {name: 'Account', value:0},
                 {name: 'Contact', value:1},
             ];
+
+            $scope.days = [
+                {name: "Sunday", value:1},
+                {name: "Monday", value:2},
+                {name: "Tuesday", value:3},
+                {name: "Wednesday", value:4},
+                {name: "Thursday", value:5},
+                {name: "Friday", value:6},
+                {name: "Saturday", value:7}
+            ];
+
+            $scope.dates = [];
+            for(var i=0; i<=31; i++){
+                $scope.dates.push(i);
+            }
 
             $scope.loadTags = function($query){
                 if($scope.task.referType == 0){

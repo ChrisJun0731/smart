@@ -252,6 +252,16 @@
                 <h4>Repeat</h4>
                 <select class="form-control input-lg" ng-options="repeat.value as repeat.name for repeat in repeatTypes" ng-model="task.repeatType" ng-init="(task.repeatType==undefined)?(task.repeatType=repeatTypes[0].value):0"></select>
 
+                <div ng-show="task.repeatType==4">
+                    <h4>Day Of Week</h4>
+                    <select class="form-control input-lg" ng-options="day.value as day.name for day in days" ng-model="task.day"></select>
+                </div>
+
+                <div ng-show="task.repeatType==5">
+                    <h4>Date Of Month</h4>
+                    <select class="form-control input-lg" ng-options="date for date in dates" ng-model="task.date"></select>
+                </div>
+
                 <h4>Alert Time</h4>
                 <div uib-timepicker hour-step="1" minute-step="1" ng-model="task.alertTime"></div>
 

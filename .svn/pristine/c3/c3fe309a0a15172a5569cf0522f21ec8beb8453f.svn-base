@@ -61,10 +61,6 @@ public class FixRateTask {
                             //将taskInfo的状态更新为done
                             taskInfo.setStatus(TaskStatus.Done);
                             taskInfoRepository.save(taskInfo);
-                            //向activityInfo中插入一条信息
-                            ActivityInfo activityInfo = new ActivityInfo();
-                            activityInfo.setEventType("task");
-                            activityInfo.setEventMsg();
                             break;
                         //every day
                         case 2:
