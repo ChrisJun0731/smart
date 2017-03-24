@@ -1,0 +1,40 @@
+package com.sumridge.smart.test;
+
+import com.alibaba.fastjson.JSON;
+import com.sumridge.smart.Application;
+import com.sumridge.smart.bean.AccountAggBean;
+import com.sumridge.smart.bean.AccountBean;
+import com.sumridge.smart.entity.AccountInfo;
+import com.sumridge.smart.entity.AccountMapping;
+import com.sumridge.smart.query.AccountQuery;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
+
+/**
+ * Created by zhujun on 2017/3/23.
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = Application.class)
+public class AccountQueryJTest {
+
+    @Autowired
+    private AccountQuery accountQuery;
+
+    @Test
+    public void queryAccountInitialsTest(){
+        List<AccountBean> accountBeanList = accountQuery.queryAccountInitials();
+        System.out.println(JSON.toJSONString(accountBeanList));
+    }
+
+    @Test
+    public void queryAccountByInitialsTest(){
+        AccountAggBean accountAggBean = accountQuery.queryAccountByInitials("3", 5);
+        System.out.println(JSON.toJSONString(accountAggBean));
+
+    }
+}

@@ -337,5 +337,34 @@ define(['../services/AccountService.js'], function () {
 
         };
 
+        //load more accounts add by zj 17/03/24
+        $scope.loadMoreAccounts = function(initial, size){
+            var config = {params:{initial:initial, size: size}};
+            accountService.loadMoreAccounts(config).then(function(rs){
+                if(rs.success){
+                    var newAccount = rs.data;
+                    angular.forEach($scope.accountList, function(account, index){
+                        if(account.id == newAccount.id){
+                            $scope.accountList[index] = newAccount;
+                        }
+                    });
+                }
+            });
+        };
+
+        $scope.loadMoreCompany = function(initial, size){
+            var config = {params:{initial:initial, size:size}};
+            accountService.loadMoreCompany(config).then(function(rs){
+                if(rs.success){
+                    var newCompany = rs.data;
+                    angular.forEach($scope.companyList, function(company, index){
+                        if(company.id == newCompany.id){
+                            $scope.companyList[index] = newCompany;
+                        }
+                    });
+                }
+            });
+        }
+
     }];
 });

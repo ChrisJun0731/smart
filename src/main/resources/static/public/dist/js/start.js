@@ -1,4 +1,10 @@
-define(['angular', 'angularAMD', 'angular-moment','angular-ui-router', 'ui-bootstrap','angular-animate','angular-file-upload','angular-img-crop','angular-tag','angular-ui-calendar','angular-xeditable','angular-chart','angular-post-message','angular-underscore','angular-ui-mention','jquery','angular-sanitize'], function (angular, angularAMD) {
+define(['angular', 'angularAMD', 'angular-moment','angular-ui-router',
+    'ui-bootstrap','angular-animate','angular-file-upload','angular-img-crop',
+    'angular-tag','angular-ui-calendar','angular-xeditable','angular-chart',
+    'angular-post-message','angular-underscore','angular-ui-mention'
+    ,'jquery','angular-sanitize','elasticsearch','c3-angular'],
+    function (angular, angularAMD) {
+
     console.log("app start");
 
     // routes
@@ -253,7 +259,9 @@ define(['angular', 'angularAMD', 'angular-moment','angular-ui-router', 'ui-boots
             }));
     };
 
-    var app = angular.module("smartCrmApp", ['angularMoment','ui.router','ui.bootstrap','ngAnimate','angularFileUpload','ngImgCrop','ngTagsInput','ui.calendar','xeditable','chart.js','ngPostMessage','underscore','ui.mention','ngSanitize']);
+    var app = angular.module("smartCrmApp", ['angularMoment','ui.router','ui.bootstrap','ngAnimate','angularFileUpload'
+        ,'ngImgCrop','ngTagsInput','ui.calendar','xeditable','chart.js','ngPostMessage','underscore','ui.mention'
+        ,'ngSanitize','elasticsearch','gridshore.c3js.chart']);
 
     app.config(["$stateProvider", "$urlRouterProvider", registerRoutes]);
     //add by zj 16/11/09

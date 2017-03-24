@@ -74,6 +74,18 @@ define(['app'], function(app){
                     return response.data;
                 });
                 return promise;
+            },
+            loadMoreAccounts: function(config){
+                var promise = $http.get('/account/loadMore',config).then(function(response){
+                    return response.data;
+                });
+                return promise;
+            },
+            loadMoreCompany: function(config){
+                var promise = $http.get('/company/loadMoreCompany',config).then(function(response){
+                    return response.data;
+                });
+                return promise;
             }
         };
         return accountService;

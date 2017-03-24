@@ -449,13 +449,13 @@ mention-container a {
                         <div class="post clearfix nga-default nga-slide-up" ng-repeat="msg in messageList" ng-show="msg.messageType=='task'">
                             <div class="user-block">
                                 <span class="fa fa-check fa-2x" style="float:left; color:white; background-color:#f90; border-radius:4px;"></span>
-                                <span class="username" ng-show="msg.content.title!=null">
+                                <span class="username" ng-show="msg.content.systemMessage==null">
                                     <a href="#" ng-bind="msg.content.title"></a>
                                     <span style="color:#999;">described {{msg.content.description}} is a task created by</span>
                                     <a href="#" ng-bind="msg.userName"></a>
                                 </span>
-                                <span class="username" ng-show="msg.content.title==null">
-                                    <span>System.</span>
+                                <span class="username" ng-show="msg.content.systemMessage!=null">
+                                    <span>{{msg.content.systemMessage}}</span>
                                 </span>
                                 <span class="description">added task - <span am-time-ago="msg.time"></span></span>
                             </div>

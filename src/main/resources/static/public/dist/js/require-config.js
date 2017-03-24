@@ -27,10 +27,17 @@ require.config({
         "app" : "/public/dist/js/start",
         "angular-ui-mention": "/public/plugins/angularjs/sina_mention.min",
         "angular-sanitize": "/public/plugins/angularjs/angular-sanitize.min",
-        "markdown": "/public/plugins/angularjs/markdown.min"
+        "markdown": "/public/plugins/angularjs/markdown.min",
+        "elasticsearch": "/public/plugins/elasticsearch/elasticsearch.angular.min",
+        "d3": "/public/plugins/c3/d3.min",
+        "c3": "/public/plugins/c3/c3.min",
+        "c3-angular": "/public/plugins/c3/c3-angular.min"
     },
     shim: {
-        'angular': { exports: "angular" },
+        'angular': {
+            deps: ['jquery'],
+            exports: "angular"
+        },
         'angular-animate':['angular'],
         'ui-bootstrap' :['angular'],
         'angular-xeditable' :['angular'],
@@ -57,6 +64,9 @@ require.config({
         'angular-underscore': ['underscore','angular'],
         'angular-ui-mention': ['angular'],
         'angular-sanitize':['angular'],
+        'elasticsearch':['angular'],
+        'c3':['d3'],
+        'c3-angular':['c3','angular']
     },
     deps:['app']
 });

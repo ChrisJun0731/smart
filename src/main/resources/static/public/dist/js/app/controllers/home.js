@@ -193,6 +193,7 @@ define(['jquery','angular','angular-sanitize','markdown','../services/UserServic
             });
         }
         var richTextController = function($scope, $sce, $uibModalInstance){
+            console.log("edit rich");
             $scope.richText = {content: ""};
             var markHtml;
             $scope.markdown = function(){
