@@ -104,13 +104,13 @@ mention-container a {
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
 }
-.box-body img{
+.photoTip img{
     margin-left: 5px;
     margin-top: 5px;
     width: 100px;
     height: 100px;
 }
-.box-body img:nth-child(3n+1){
+.photoTip img:nth-child(3n+1){
     margin-left: 0px;
 }
 #note img{
@@ -228,7 +228,7 @@ mention-container a {
             <div class="box box-primary">
                 <div class="box-body">
                     <div class="form-group mention-container">
-                        <textarea ui-mention my-mention class="form-control" rows="3" placeholder="Enter ..." ng-model="messageContent"></textarea>
+                        <textarea ui-mention sina-mention class="form-control" rows="3" placeholder="Enter ..." ng-model="messageContent"></textarea>
                         <div class="mention-highlight"></div>
                         <ul ng-if="$mention.choices.length" class="dropdown">
                             <li>请选择最近@的人或者直接输入</li>
@@ -292,10 +292,13 @@ mention-container a {
                             <!-- /.user-block -->
                             <div class="user-block" ng-show="msg.messageType=='task'">
                                 <span class="fa fa-check fa-2x" style="float:left; color:white; background-color:#f90; border-radius:4px;"></span>
-                                <span class="username">
+                                <span class="username" ng-show="msg.content.sysMessage == undefined">
                                     <a href="#" ng-bind="msg.content.title"></a>
                                     <span style="color:#999;">described {{msg.content.description}} is a task created by</span>
                                     <a href="#" ng-bind="msg.userName"></a>
+                                </span>
+                                <span class="username" ng-show="msg.content.sysMessage != undefined">
+                                    {{msg.content.sysMessage}}
                                 </span>
                                 <span class="description">added task - <span am-time-ago="msg.time"></span></span>
                             </div>
@@ -325,6 +328,7 @@ mention-container a {
                                     </a>
                                 </li>
                             </ul>
+
                             <div ng-show="msg.commentsFlag">
                                 <div ng-repeat="comment in msg.commentInfoList">
                                     <div class="user-block">
@@ -346,6 +350,9 @@ mention-container a {
                         </div>
                         <!-- /.post -->
 
+                        <div class="user-block" style="text-align:center;">
+                            <a href="" ng-click="loadMore(board.id, messageList.length)" >LoadMore...</a>
+                        </div>
                     </uib-tab>
                     <!-- /.tab-pane -->
                     <uib-tab index="1" heading="Timeline">

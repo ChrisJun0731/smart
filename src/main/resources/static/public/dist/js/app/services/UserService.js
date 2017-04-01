@@ -72,11 +72,17 @@ define(['app'], function(app){
                     return response.data;
                 });
                 return promise;
+            },
+            loadMore: function(config){
+                var promise = $http.get("/board/loadMore", config).then(function(response){
+                    return response.data;
+                });
+                return promise;
             }
         };
         return userService;
     })
-    .directive('myMention', function(){
+    .directive('sinaMention', function(){
         return {
             restrict: 'A',
             require: "uiMention",

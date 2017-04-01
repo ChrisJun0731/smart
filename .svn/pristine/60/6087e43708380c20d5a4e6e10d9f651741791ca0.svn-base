@@ -1,0 +1,426 @@
+package com.sumridge.smart.service;
+
+
+import com.sumridge.smart.bean.*;
+import com.sumridge.smart.dao.ActivityInfoRepository;
+import com.sumridge.smart.dao.BoardInfoRepository;
+import com.sumridge.smart.dao.TaskInfoRepository;
+import com.sumridge.smart.entity.*;
+import com.sumridge.smart.query.*;
+import groovyjarjarantlr.ActionTransInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Created by liu on 16/4/6.
+ */
+@Service
+public class BoardService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BoardService.class);
+    private final int LIMIT = 20;
+
+    @Autowired
+    private BoardInfoRepository boardInfoRepository;
+
+    @Autowired
+    private TaskInfoRepository taskInfoRepository;
+
+    @Autowired
+    private BoardQuery boardQuery;
+
+    @Autowired
+    private ActivityQuery activityQuery;
+
+    @Autowired
+    private UserQuery userQuery;
+
+    @Autowired
+    private SimpMessageSendingOperations messagingTemplate;
+
+    @Autowired
+    private ActivityInfoRepository activityInfoRepository;
+
+    @Autowired
+    private BoardFileQuery boardFileQuery;
+
+    @Autowired
+    private AccountQuery accountQuery;
+
+
+
+    public ResultBean getUserBoard(UserInfo profile) {
+        BoardInfoBean bean = new BoardInfoBean();
+        bean.setBoardName(profile.getFirstName() + " " + profile.getLastName());
+        bean.setDescription(profile.getDescription());
+        bean.setBoardImg(profile.getPhoto());
+        BoardInfo info = boardQuery.getHomeBoardBaseInfo(profile.getId());
+        bean.setId(info.getId());
+        bean.setProperty(new HashMap<>());
+        bean.getProperty().put("followers", info.getFollowerCount());
+        bean.getProperty().put("following", info.getFollowingCount());
+        //add title,phone,email,company
+        bean.getProperty().put("title", profile.getTitle());
+        bean.getProperty().put("phone",profile.getPhone());
+        bean.getProperty().put("email",profile.getEmail());
+        bean.getProperty().put("company",profile.getCompany());
+        Long taskCount = taskInfoRepository.countByOwnerIdAndStatus(profile.getId(), "N");
+        bean.getProperty().put("tasks", taskCount == null ? 0 : taskCount);
+        ResultBean rs = new ResultBean();
+        rs.setData(bean);
+        rs.setSuccess(true);
+        return rs;
+    }
+
+    public ResultBean saveBoard(BoardInfo info) {
+        boardInfoRepository.save(info);
+        return new ResultBean();
+    }
+
+    public void createContactBoard(Contact info) {
+
+        BoardInfo boardInfo = new BoardInfo();
+        //set board owner as account id
+        boardInfo.setOwnerId(info.getId());
+        boardInfo.setBoardName(info.getFirstName()+" " +info.getLastName());
+        boardInfo.setCreateDate(new Date());
+        boardInfo.setDescription(info.getTitle());
+        Set<String> editor = new HashSet<>();
+        editor.add(info.getCreator());
+        boardInfo.setEditors(editor);
+        boardInfo.setType("Ct");
+        boardInfo.setUpdateDate(boardInfo.getCreateDate());
+        boardInfoRepository.save(boardInfo);
+
+    }
+
+    public void createAccountBoard(AccountDetailBean info) {
+
+        BoardInfo boardInfo = new BoardInfo();
+        //set board owner as account id
+        boardInfo.setOwnerId(info.getId());
+        boardInfo.setBoardName(info.getName());
+        boardInfo.setCreateDate(new Date());
+        boardInfo.setDescription(info.getDescription());
+        Set<String> editor = new HashSet<>();
+        editor.add(info.getCreator());
+        boardInfo.setEditors(editor);
+        boardInfo.setType("A");
+        boardInfo.setUpdateDate(boardInfo.getCreateDate());
+        boardInfoRepository.save(boardInfo);
+
+    }
+
+    public void createCompanyBoard(CompanyInfo info) {
+        BoardInfo boardInfo = new BoardInfo();
+        //set board owner as company id
+        boardInfo.setOwnerId(info.getId());
+        boardInfo.setBoardName(info.getShortName());
+        boardInfo.setCreateDate(new Date());
+        boardInfo.setDescription(info.getDescription());
+        Set<String> editor = new HashSet<>();
+        editor.add(info.getCreator());
+        boardInfo.setEditors(editor);
+        boardInfo.setType("C");
+        boardInfo.setUpdateDate(boardInfo.getCreateDate());
+        boardInfoRepository.save(boardInfo);
+    }
+
+    public ResultBean getTopBoards(UserInfo userInfo) {
+        ResultBean resultBean = new ResultBean();
+        BoardInfo info = boardQuery.getHomeBoardBaseInfo(userInfo.getId());
+        List<BoardInfo> boardInfoBeanList = boardQuery.getTopBoards(userInfo.getTeamIdSet(), info.getId());
+        resultBean.setSuccess(true);
+        resultBean.setData(boardInfoBeanList);
+        return resultBean;
+
+    }
+
+    public ResultBean getBoardInfo(UserInfo userInfo, String boardId, String ownerId) {
+        if(boardId == null) {
+            boardId = getBoardIdByOwner(ownerId);
+        }
+        BoardInfo info = boardQuery.getBoardInfo(boardId,userInfo.getTeamIdSet());
+        CommonBoardBean result = new CommonBoardBean();
+        BeanUtils.copyProperties(info, result);
+        //set flag
+        if(info.getEditors() != null && info.getEditors().contains(userInfo.getId())) {
+            result.setEditor(true);
+        }
+        result.setFollow(boardQuery.isFollowing(userInfo.getId(), boardId));
+        ResultBean resultBean = new ResultBean();
+        resultBean.setSuccess(true);
+        resultBean.setData(result);
+        return resultBean;
+
+    }
+
+    public String getBoardIdByOwner(String ownerId) {
+
+        return boardQuery.getBoardId(ownerId);
+    }
+
+    public ResultBean postMessage(UserInfo userInfo, PostMessageBean message) {
+        //TODO privilege check
+        LOGGER.info("post message:" + message.getMessageContent());
+
+        //TODO add note as simple message
+        if (message.getMessageType().equals("common")) {
+
+            ActivityInfo activityInfo = new ActivityInfo();
+            activityInfo.setBoardId(message.getBoardId());
+            activityInfo.setEventUser(userInfo.getId());
+            activityInfo.setEventDate(new Date());
+            activityInfo.setEventMsg(message.getMessageContent());
+            activityInfo.setEventType("note");
+            activityInfo.setCommentCount(0);
+            activityInfo.setLevel("public");
+            activityInfoRepository.save(activityInfo);
+
+            sendMessageAlert(activityInfo, userInfo);
+        }
+
+        return new ResultBean();
+    }
+
+    private void sendMessageAlert(ActivityInfo activityInfo, UserInfo user) {
+
+        //TODO send sub message to channel
+        Map<String, Object> map = new HashMap<>();
+        map.put(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON);
+        ActivityMessageBean result = getActivityMessageBean(activityInfo, user);
+        messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/message", result, map);
+    }
+
+    private ActivityMessageBean getActivityMessageBean(ActivityInfo activityInfo, UserInfo user) {
+        //TODO move to cache fetch
+        BoardInfo info = boardQuery.getHomeBoardBaseInfo(user.getId());
+
+        ActivityMessageBean result = new ActivityMessageBean();
+        result.setContent(activityInfo.getEventMsg());
+        result.setId(activityInfo.getId());
+        result.setMessageType(activityInfo.getEventType());
+        result.setTime(activityInfo.getEventDate().getTime());
+        result.setUserId(activityInfo.getEventUser());
+        result.setUserName(user.getFirstName()+" "+ user.getLastName());
+        result.setUserPhoto(user.getPhoto());
+        result.setComments(activityInfo.getCommentCount());
+        //add by zj 2016/11/22 存放评论的内容,倒序排序
+        List commentList = activityInfo.getCommentInfoList();
+        if(commentList!= null)
+            Collections.reverse(commentList);
+        result.setCommentInfoList(commentList);
+        if(!info.getId().equals(activityInfo.getBoardId()))
+        {
+            result.setBoardId(activityInfo.getBoardId());
+        } else {
+            result.setBoardId("");
+        }
+
+        return result;
+    }
+
+    public ResultBean getHomeMessage(UserInfo userInfo) {
+
+        BoardInfo info = boardQuery.getHomeBoardFollowing(userInfo.getId());
+
+        List<ActivityInfo> activityInfoList =activityQuery.getHomeActivity(info.getId(), info.getFollowings(), null, LIMIT);
+        List<ActivityMessageBean> messageBeanList = new ArrayList<>();
+        dealActivity(userInfo, activityInfoList, messageBeanList);
+        ResultBean resultBean = new ResultBean();
+        resultBean.setSuccess(true);
+        resultBean.setData(messageBeanList);
+        return resultBean;
+    }
+
+    public ResultBean followBoard(UserInfo userInfo, String boardId) {
+        //TODO move to cache fetch
+        BoardInfo info = boardQuery.getHomeBoardBaseInfo(userInfo.getId());
+
+        boolean followResult = boardQuery.followBoard(boardId, userInfo.getTeamIdSet(), info.getId());
+
+        ResultBean rs = new ResultBean();
+        rs.setSuccess(followResult);
+        return rs;
+    }
+
+    public ResultBean unfollowBoard(UserInfo userInfo, String boardId) {
+        BoardInfo info = boardQuery.getHomeBoardBaseInfo(userInfo.getId());
+
+        boolean followResult = boardQuery.unfollowBoard(boardId, userInfo.getTeamIdSet(), info.getId());
+
+        ResultBean rs = new ResultBean();
+        rs.setSuccess(followResult);
+        return rs;
+
+    }
+
+    public ResultBean getActivity(UserInfo userInfo, String boardId) {
+        List<ActivityInfo> activityInfoList =activityQuery.getBoardActivity(boardId, null);
+        List<ActivityMessageBean> messageBeanList = new ArrayList<>();
+        dealActivity(userInfo, activityInfoList, messageBeanList);
+        ResultBean resultBean = new ResultBean();
+        resultBean.setSuccess(true);
+        resultBean.setData(messageBeanList);
+        return resultBean;
+    }
+
+    private void dealActivity(UserInfo userInfo, List<ActivityInfo> activityInfoList, List<ActivityMessageBean> messageBeanList) {
+        activityInfoList.forEach(activityInfo -> {
+            UserInfo user = null;
+            if(userInfo.getId().equals(activityInfo.getEventUser())) {
+                user = userInfo;
+            } else {
+                user = userQuery.getBaseUserInfo(activityInfo.getEventUser());
+            }
+            ActivityMessageBean result = getActivityMessageBean(activityInfo, user);
+            messageBeanList.add(result);
+
+        });
+    }
+
+    public ResultBean topfiles(UserInfo userInfo, String boardId) {
+        List<BoardFileInfo> fileList = boardFileQuery.queryTopFileList(boardId,5, true);
+        ResultBean resultBean = new ResultBean();
+        resultBean.setSuccess(true);
+        resultBean.setData(fileList);
+        return resultBean;
+    }
+
+    public ResultBean getAccountBoardInfo(UserInfo userInfo, String ownerId) {
+        BoardInfo info = boardQuery.getConfirmBoard(ownerId);
+        if(info == null) {
+
+            info = createBoardByAccountId(ownerId);
+           
+        }
+        ResultBean rs = new ResultBean();
+        if(info != null) {
+
+            BoardInfoBean bean = new BoardInfoBean();
+            bean.setBoardName(info.getBoardName());
+            bean.setDescription(info.getDescription());
+            bean.setBoardImg(info.getBoardImg());
+            bean.setId(info.getId());
+            bean.setProperty(new HashMap<>());
+            bean.getProperty().put("followers", info.getFollowerCount());
+            bean.getProperty().put("documents", info.getDocumentCount());
+            AccountDetailBean account = accountQuery.queryAccount(ownerId);
+            if(account != null) {
+                bean.getProperty().put("sales", account.getSalesCount());
+            } else {
+                bean.getProperty().put("sales", 0);
+            }
+            //TODO
+            bean.getProperty().put("tasks", 0);
+
+            rs.setData(bean);
+            rs.setSuccess(true);
+        }
+
+        return rs;
+    }
+
+    private BoardInfo createBoardByAccountId(String ownerId) {
+
+        AccountDetailBean accountInfo = accountQuery.queryAccount(ownerId);
+
+
+        BoardInfo boardInfo = new BoardInfo();
+        //set board owner as account id
+        boardInfo.setOwnerId(accountInfo.getId());
+        boardInfo.setBoardName(accountInfo.getName());
+        boardInfo.setCreateDate(new Date());
+        boardInfo.setDescription(accountInfo.getDescription());
+        Set<String> editor = new HashSet<>();
+        editor.add(accountInfo.getCreator());
+        boardInfo.setEditors(editor);
+        boardInfo.setType("A");
+        boardInfo.setUpdateDate(boardInfo.getCreateDate());
+        boardInfoRepository.save(boardInfo);
+
+        return boardInfo;
+    }
+
+    public void saveTeamBoard(TeamInfo team) {
+        if(boardQuery.checkExsitByOwnerId(team.getId())) {
+            //update
+            boardQuery.updateTeamBoardInfo(team);
+        } else {
+            //create
+            BoardInfo info = new BoardInfo();
+            info.setOwnerId(team.getId());
+            info.setCreateDate(new Date());
+            info.setType("T");
+            Visible vis = new Visible();
+            vis.setVisType("T");
+            vis.setVisId(team.getId());
+            info.setVisibles(Arrays.asList(vis));
+            info.setBoardImg(team.getPhoto());
+            info.setBoardName(team.getTeamName());
+            info.setDescription(team.getDescription());
+            info.setUpdateDate(new Date());
+            info.setEditors(Stream.of(team.getCreator()).collect(Collectors.toSet()));
+            saveBoard(info);
+        }
+    }
+
+    public void saveUserBoard(UserInfo userInfo) {
+        if(boardQuery.checkExsitByOwnerId(userInfo.getId())) {
+            //update
+            boardQuery.updateUserBoardInfo(userInfo);
+        } else {
+            //create
+            BoardInfo info = new BoardInfo();
+            info.setOwnerId(userInfo.getId());
+            info.setCreateDate(new Date());
+            info.setType("H");
+            List<Visible> visList = new ArrayList<>();
+            for(String teamId : userInfo.getTeamIdSet()) {
+                Visible vis = new Visible();
+                vis.setVisType("T");
+                vis.setVisId(teamId);
+                visList.add(vis);
+            }
+            info.setVisibles(visList);
+            info.setBoardImg(userInfo.getPhoto());
+            info.setBoardName(userInfo.getFirstName()+" "+ userInfo.getLastName());
+            info.setDescription(userInfo.getDescription());
+            info.setUpdateDate(new Date());
+            info.setEditors(Stream.of(userInfo.getId()).collect(Collectors.toSet()));
+            saveBoard(info);
+        }
+    }
+
+    // add by zj 2016/11/22
+    public void removeMsg(String activityId){
+        activityInfoRepository.delete(activityId);
+    }
+
+    public void comment(UserInfo userInfo,String comment, String id){
+        CommentInfo commentInfo = new CommentInfo();
+        commentInfo.setAuthor(userInfo.getFirstName()+" "+userInfo.getLastName());
+        commentInfo.setPhoto(userInfo.getPhoto());
+        commentInfo.setContent(comment);
+        commentInfo.setDate(new Date());
+        activityQuery.pushComment(commentInfo,id);
+
+    }
+
+    //load more activityInfo in home page add by zj 17/03/28
+    public ResultBean loadMoreActivityInfo(UserInfo userInfo, String borardId, int size){
+        List<ActivityInfo> activityInfos = activityQuery.getHomeActivity(borardId, null, null, size+LIMIT);
+        List<ActivityMessageBean> messageBeanList = new ArrayList<>();
+        dealActivity(userInfo, activityInfos, messageBeanList);
+        return ResultBean.getSuccessResult(messageBeanList);
+    }
+}

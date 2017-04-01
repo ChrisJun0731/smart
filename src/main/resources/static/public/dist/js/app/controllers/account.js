@@ -6,15 +6,16 @@ define(['../services/AccountService.js'], function () {
 		// properties
         $scope.accountList = [];
         $scope.companyList = [];
+        $scope.match = {};
 
-        accountService.loadAccounts().then(function(rs){
+        accountService.loadAccounts({params:{match: ""}}).then(function(rs){
             console.log(rs);
             if(rs.success) {
                 $scope.accountList = rs.data;
             }
         });
 
-        accountService.loadCompanys().then(function(rs){
+        accountService.loadCompanys({params:{match:""}}).then(function(rs){
             console.log(rs);
             if(rs.success) {
                 $scope.companyList = rs.data;
@@ -339,7 +340,10 @@ define(['../services/AccountService.js'], function () {
 
         //load more accounts add by zj 17/03/24
         $scope.loadMoreAccounts = function(initial, size){
-            var config = {params:{initial:initial, size: size}};
+            if($scope.accMatch == undefined){
+                $scope.accMatch = "";
+            }
+            var config = {params:{initial:initial, size: size, match: $scope.accMatch}};
             accountService.loadMoreAccounts(config).then(function(rs){
                 if(rs.success){
                     var newAccount = rs.data;
@@ -353,7 +357,10 @@ define(['../services/AccountService.js'], function () {
         };
 
         $scope.loadMoreCompany = function(initial, size){
-            var config = {params:{initial:initial, size:size}};
+            if($scope.comMatch == undefined){
+                $scope.comMatch = "";
+            }
+            var config = {params:{initial:initial, size:size, match: $scope.comMatch}};
             accountService.loadMoreCompany(config).then(function(rs){
                 if(rs.success){
                     var newCompany = rs.data;
@@ -362,6 +369,41 @@ define(['../services/AccountService.js'], function () {
                             $scope.companyList[index] = newCompany;
                         }
                     });
+                }
+            });
+        };
+
+        $scope.fuzzySearchAccount = function($event){
+            if($event.keyCode == 13){
+                if($scope.match.account != undefined){
+                    $scope.accMatch = $scope.match.account;
+                }
+                else{
+                    $scope.accMatch = "";
+                }
+                var config = {params:{match: $scope.accMatch}};
+                accountService.loadAccounts(config).then(function(rs){
+                    if(rs.success){
+                        $scope.accountList = rs.data;
+                    }
+                });
+            }
+        };
+
+        $scope.fuzzyCompanyQuery = function($event){
+            if($event.keyCode == 13){
+                if($scope.match.company != undefined){
+                    $scope.comMatch = $scope.match.company;
+                }
+                else{
+                    $scope.comMatch = "";
+                }
+            }
+            var config = {params:{match: $scope.comMatch}};
+            accountService.loadCompanys(config).then(function(rs){
+                console.log(rs);
+                if(rs.success) {
+                    $scope.companyList = rs.data;
                 }
             });
         }

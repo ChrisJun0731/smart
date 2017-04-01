@@ -31,7 +31,8 @@ require.config({
         "elasticsearch": "/public/plugins/elasticsearch/elasticsearch.angular.min",
         "d3": "/public/plugins/c3/d3.min",
         "c3": "/public/plugins/c3/c3.min",
-        "c3-angular": "/public/plugins/c3/c3-angular.min"
+        "c3-angular": "/public/plugins/c3/c3-angular.min",
+        "angular-toastr": "/public/plugins/angularjs/angular-toastr.tpls.min"
     },
     shim: {
         'angular': {
@@ -66,7 +67,8 @@ require.config({
         'angular-sanitize':['angular'],
         'elasticsearch':['angular'],
         'c3':['d3'],
-        'c3-angular':['c3','angular']
+        'c3-angular':['c3','angular'],
+        'angular-toastr': ['angular']
     },
     deps:['app']
 });

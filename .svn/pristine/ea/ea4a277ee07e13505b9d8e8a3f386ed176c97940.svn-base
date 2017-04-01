@@ -1,0 +1,268 @@
+package com.sumridge.smart.query;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.sumridge.smart.bean.*;
+import com.sumridge.smart.entity.*;
+import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.*;
+
+/**
+ * Created by liu on 16/4/25.
+ */
+@Component
+public class AccountQuery {
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public void insertAccount(AccountInfo info, String companyName) {
+        ObjectId id = ObjectId.get();
+        info.setId(id.toString());
+        Query query = Query.query(Criteria.where("shortName").is(companyName));
+        Update update = new Update().push("accountInfos", info);
+        mongoTemplate.updateFirst(query, update, AccountInfo.class, "companyInfo");
+    }
+
+    public void addAccountMap(SaleMapping info, String accountName, String companyName) {
+
+        Query query = Query.query(Criteria.where("shortName").is(companyName).and("accountInfos.name").is(accountName));
+        Update update = new Update().push("accountInfos.$.accountMap", info);
+
+        mongoTemplate.updateFirst(query, update, "companyInfo");
+
+    }
+    public boolean saveAccount(AccountDetailBean info, String source) {
+
+
+        if (info.getId() == null) {
+            //TODO check repeat
+
+            //insert
+            NameBean nameBean = info.getCompany().get(0);
+            Query query = Query.query(Criteria.where("_id").is(nameBean.getId()));
+            ObjectId id = ObjectId.get();
+            info.setId(id.toString());
+            AccountInfo data = new AccountInfo();
+            BeanUtils.copyProperties(info, data);
+            data.setCreateSource(source);
+            Update update = new Update().push("accountInfos", data);
+            mongoTemplate.updateFirst(query, update, AccountInfo.class, "companyInfo");
+            return true;
+        } else {
+            NameBean nameBean = info.getCompany().get(0);
+            Query query = Query.query(Criteria.where("_id").is(nameBean.getId()).and("accountInfos._id").is(new ObjectId(info.getId())));
+            AccountInfo data = new AccountInfo();
+            BeanUtils.copyProperties(info, data);
+            Update update = new Update().set("accountInfos.$", data);
+            mongoTemplate.updateFirst(query, update, AccountInfo.class, "companyInfo");
+            return false;
+        }
+    }
+
+    public AccountDetailBean queryAccount(String accountId) {
+        Query query = Query.query(Criteria.where("accountInfos._id").is(new ObjectId(accountId)));
+        query.fields().include("accountInfos.$").include("_id").include("longName");
+
+        CompanyInfo companyInfo = mongoTemplate.findOne(query, CompanyInfo.class);
+        AccountDetailBean rs = new AccountDetailBean();
+        if(companyInfo != null && companyInfo.getAccountInfos().size() > 0) {
+
+            AccountInfo info = companyInfo.getAccountInfos().get(0);
+            BeanUtils.copyProperties(info, rs);
+
+            NameBean name = new NameBean();
+            name.setId(companyInfo.getId());
+            name.setShortName(companyInfo.getLongName());
+            rs.setCompany(Arrays.asList(name));
+
+        }
+        return rs;
+
+    }
+
+
+    public CompanyInfo getAccountByMapping(String brokerInitials, String ecnSource) {
+        Query query = Query.query(Criteria.where("accountInfos.accountMap._id").is(brokerInitials.trim()).and("accountInfos.accountMap.source").is(ecnSource.trim().toUpperCase()));
+        query.fields().include("_id").include("shortName").include("longName").include("accountInfos.$");
+        CompanyInfo companyInfo = mongoTemplate.findOne(query, CompanyInfo.class);
+        return companyInfo;
+    }
+
+    public List<AccountTradeBean> querySimpleList(Date fromDate, Date toDate) {
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("accountInfos.createDate").gte(fromDate).lte(toDate)),
+                Aggregation.unwind("accountInfos"),
+                Aggregation.project("accountInfos.name","accountInfos.longName","accountInfos.id","accountInfos.accountMap").andExclude("_id"),
+                Aggregation.limit(10));
+
+        AggregationResults<AccountTradeBean> result = mongoTemplate.aggregate(aggregation, CompanyInfo.class, AccountTradeBean.class);
+
+        return result.getMappedResults();
+    }
+
+    //add by zj 16/12/13
+    public void addPortfolio(PortfolioInfo portfolioInfo){
+//        Query query = new Query(Criteria.where("portfolios.account_id").elemMatch(Criteria.where("_id").is(new ObjectId(id)))
+//                .and("accountInfos._id").is(new ObjectId(id)));
+//        Update update = new Update();
+//        portfolioInfo.setId(new ObjectId());
+//        update.addToSet("accountInfos.$.portfolios",portfolioInfo);
+//        mongoTemplate.updateFirst(query, update, "companyInfo");
+        portfolioInfo.setId(new ObjectId().toString());
+        mongoTemplate.insert(portfolioInfo, "portfolios");
+    }
+
+    //add by zj 16/12/15
+    public List<PortfolioInfo> loadPortfolio(String id){
+        Query query = new Query(Criteria.where("accountId").is(id));
+        List<PortfolioInfo> portfolios = mongoTemplate.find(query, PortfolioInfo.class, "portfolios");
+        return portfolios;
+    }
+
+    //add by zj 16/12/19
+    public void updatePortfolio(PortfolioInfo portfolio) {
+        Query query = new Query();
+        Update update = new Update();
+        query.addCriteria(Criteria.where("_id").is(portfolio.getId()));
+        update.set("list",portfolio.getList());
+        update.set("title",portfolio.getTitle());
+        update.set("email",portfolio.getEmail());
+        mongoTemplate.updateFirst(query, update, "portfolios");
+    }
+
+    //add by zj 16/12/30
+    public List<CompanyInfo> getAccountNames(){
+        Query query = new Query();
+        List<CompanyInfo> companyInfos = mongoTemplate.find(query, CompanyInfo.class);
+        return companyInfos;
+    }
+
+
+    public List<PortfolioInfo> getPortfoliosTitles(String[] accountIds){
+        List<PortfolioInfo> portfolioInfos = new ArrayList<>();
+        for(String id: accountIds){
+            Query query = new Query();
+            query.addCriteria(Criteria.where("accountId").is(id));
+            List<PortfolioInfo> portfolioInfo = mongoTemplate.find(query, PortfolioInfo.class, "portfolios");
+            portfolioInfos.addAll(portfolioInfo);
+        }
+        return portfolioInfos;
+    }
+
+    //add by zj 17/01/10
+    public PortfolioInfo findPortfolioInfoByTitle(String title){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("title").is(title));
+        PortfolioInfo portfolioInfo = mongoTemplate.findOne(query, PortfolioInfo.class, "portfolios");
+        return portfolioInfo;
+    }
+
+    //add by zj 17/01/11
+    public AccountInfo findAccountByAccountId(String id){
+        DBObject queryObject = new BasicDBObject();
+        queryObject.put("accountInfos._id",new ObjectId(id));
+        DBObject fields = new BasicDBObject();
+        fields.put("_id", false);
+        fields.put("accountInfos", true);
+        Query query = new BasicQuery(queryObject, fields);
+        CompanyInfo companyInfo = mongoTemplate.findOne(query, CompanyInfo.class);
+        return companyInfo.getAccountInfos().get(0);
+    }
+
+    //query account by salesMap add by zj 17/03/23
+    public AccountBean queryAccountBySalesMap(AccountMapping salesMap){
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.unwind("accountInfos"),
+                Aggregation.unwind("accountInfos.accountMap"),
+                Aggregation.match(Criteria.where("accountInfos.accountMap._id").is(salesMap.getAccount())
+                        .and("accountInfos.accountMap.source").is(salesMap.getSource())),
+                Aggregation.project().and("$accountInfos.id").as("accountId")
+        );
+        AggregationResults<AccountBean> result = mongoTemplate.aggregate(aggregation, CompanyInfo.class, AccountBean.class);
+        AccountBean accountBean = result.getMappedResults().get(0);
+        return accountBean;
+    }
+
+    //query the collection of account initials
+    public List<AccountBean> queryAccountInitials(String match){
+        Aggregation aggregation = null;
+        if(match != null){
+            aggregation = Aggregation.newAggregation(
+                    Aggregation.unwind("$accountInfos"),
+                    Aggregation.match(Criteria.where("accountInfos.name").regex("\\w*"+match+"\\w*")),
+                    Aggregation.group("$accountInfos.initial"),
+                    Aggregation.sort(Sort.Direction.ASC, "_id")
+            );
+        }
+        else{
+            aggregation = Aggregation.newAggregation(
+                    Aggregation.unwind("$accountInfos"),
+                    Aggregation.group("$accountInfos.initial"),
+                    Aggregation.sort(Sort.Direction.ASC, "_id")
+            );
+        }
+        AggregationResults<AccountBean> results = mongoTemplate.aggregate(aggregation, CompanyInfo.class, AccountBean.class);
+        return results.getMappedResults();
+    }
+
+    //query accountInfo by initials within the limit nums
+    public AccountAggBean queryAccountByInitials(String initial, int limit, String match){
+        Aggregation aggregation = null;
+        if(match != null){
+            aggregation = Aggregation.newAggregation(
+                    Aggregation.unwind("accountInfos"),
+                    Aggregation.match(Criteria.where("accountInfos.initial").is(initial).and("accountInfos.name").regex("\\w*"+match+"\\w*")),
+                    Aggregation.limit(limit),
+                    Aggregation.group("accountInfos.initial").push(new BasicDBObject("name","$accountInfos.name").append("description", "$accountInfos.description").append("id", "$accountInfos._id")).as("accounts")
+            );
+        }
+        else{
+            aggregation = Aggregation.newAggregation(
+                    Aggregation.unwind("accountInfos"),
+                    Aggregation.match(Criteria.where("accountInfos.initial").is(initial)),
+                    Aggregation.limit(limit),
+                    Aggregation.group("accountInfos.initial").push(new BasicDBObject("name","$accountInfos.name").append("description", "$accountInfos.description").append("id", "$accountInfos._id")).as("accounts")
+            );
+        }
+        AggregationResults<AccountAggBean> results = mongoTemplate.aggregate(aggregation, CompanyInfo.class, AccountAggBean.class);
+        return results.getMappedResults().get(0);
+    }
+
+
+
+
+
+
+
+    //        String sqlGroup = "{$group:{_id: \"$accountInfos.initial\",accounts:{$push:{name:\"$accountInfos.name\",description:\"$accountInfos.description\"}}}}";
+//        DBObject group = (DBObject) JSON.parse(sqlGroup);
+//        String sqlUnwind = "{ $unwind: \"$accountInfos\"}";
+//        DBObject unwind = (DBObject) JSON.parse(sqlUnwind);
+//        AggregationOutput result = mongoTemplate.getCollection("companyInfo").aggregate(Arrays.asList(unwind, group));
+//        result.results().forEach(dbObject -> {
+//
+//            System.out.println(JSON.serialize(dbObject));
+//        });
+    //       System.out.println("agg:"+aggregation.toString());
+    //        result.getMappedResults().forEach(accountAggBean -> {
+//            System.out.println(accountAggBean.getId());
+//        });
+
+
+}

@@ -2,7 +2,7 @@ define(['angular', 'angularAMD', 'angular-moment','angular-ui-router',
     'ui-bootstrap','angular-animate','angular-file-upload','angular-img-crop',
     'angular-tag','angular-ui-calendar','angular-xeditable','angular-chart',
     'angular-post-message','angular-underscore','angular-ui-mention'
-    ,'jquery','angular-sanitize','elasticsearch','c3-angular'],
+    ,'jquery','angular-sanitize','elasticsearch','c3-angular','angular-toastr'],
     function (angular, angularAMD) {
 
     console.log("app start");
@@ -261,13 +261,18 @@ define(['angular', 'angularAMD', 'angular-moment','angular-ui-router',
 
     var app = angular.module("smartCrmApp", ['angularMoment','ui.router','ui.bootstrap','ngAnimate','angularFileUpload'
         ,'ngImgCrop','ngTagsInput','ui.calendar','xeditable','chart.js','ngPostMessage','underscore','ui.mention'
-        ,'ngSanitize','elasticsearch','gridshore.c3js.chart']);
+        ,'ngSanitize','elasticsearch','gridshore.c3js.chart','toastr']);
 
     app.config(["$stateProvider", "$urlRouterProvider", registerRoutes]);
     //add by zj 16/11/09
     app.config(["$compileProvider",function($compileProvider){
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(data):/);
     }]);
+    app.config(function(toastrConfig){
+        angular.extend(toastrConfig, {
+            positionClass: 'toast-bottom-right'
+        });
+    });
     app.run(['$state', '$rootScope', function($state, $rootScope) {
         $rootScope.$on('$stateChangeStart', function(e, toState, toParams, fromState, fromParams) {
 

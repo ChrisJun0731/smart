@@ -15,7 +15,7 @@ define(['angular','../services/SalesService.js','../filter/FileSizeFilter.js'], 
         $scope.currentPage = 0;
         $scope.pageSize = 50;
 
-        var pageConfig = {params:{currentPage:$scope.currentPage,pageSize:$scope.pageSize}}
+        var pageConfig = {params:{currentPage:$scope.currentPage,pageSize:$scope.pageSize}};
         salesService.loadPagedSales(pageConfig).then(function(rs){
             console.log(rs);
             if(rs.success){
@@ -37,20 +37,35 @@ define(['angular','../services/SalesService.js','../filter/FileSizeFilter.js'], 
         $scope.prePage = function(){
             if($scope.currentPage > 0){
                 $scope.currentPage--;
-                pageConfig = {params:{currentPage:$scope.currentPage,pageSize:$scope.pageSize}};
-                salesService.loadPagedSales(pageConfig).then(function(rs){
-                    $scope.getCurrentPage(rs);
-                });
-            };
+                pageConfig = {params:{currentPage:$scope.currentPage, pageSize:$scope.pageSize, match:$scope.searchStr}};
+                if($scope.searchMode == false || $scope.searchMode == undefined){
+                    salesService.loadPagedSales(pageConfig).then(function(rs){
+                        $scope.getCurrentPage(rs);
+                    });
+                }
+                else{
+                    salesService.searchSales(pageConfig).then(function(rs){
+                        $scope.getCurrentPage(rs);
+                    });
+                }
+            }
         };
 
         $scope.nextPage = function(){
             if($scope.currentPage < $scope.maxPage){
                 $scope.currentPage++;
-                pageConfig = {params:{currentPage:$scope.currentPage,pageSize:$scope.pageSize}};
-                salesService.loadPagedSales(pageConfig).then(function(rs){
-                    $scope.getCurrentPage(rs);
-                });
+                if($scope.searchMode == false || $scope.searchMode == undefined){
+                    pageConfig = {params:{currentPage:$scope.currentPage,pageSize:$scope.pageSize}};
+                    salesService.loadPagedSales(pageConfig).then(function(rs){
+                        $scope.getCurrentPage(rs);
+                    });
+                }
+                else{
+                    pageConfig = {params:{currentPage: $scope.currentPage, pageSize: $scope.pageSize, match: $scope.searchStr}};
+                    salesService.searchSales(pageConfig).then(function(rs){
+                        $scope.getCurrentPage(rs);
+                    });
+                }
             };
         };
 
@@ -213,6 +228,32 @@ define(['angular','../services/SalesService.js','../filter/FileSizeFilter.js'], 
 
         };
 
+        $scope.search = function($event){
+            if($event.keyCode == 13){
+                if($scope.match != undefined){
+                    $scope.searchMode = true;
+                    $scope.searchStr = $scope.match;
+                    $scope.currentPage = 0;
+                }
+                else{
+                    $scope.searchMode = false;
+                }
+                if($scope.searchMode == true){
+                    var config = {params:{currentPage:$scope.currentPage, pageSize:$scope.pageSize, match:$scope.searchStr}};
+                    salesService.searchSales(config).then(function(rs){
+                        $scope.getCurrentPage(rs);
+                    });
+                }
+                else if($scope.searchMode == false){
+                    salesService.loadPagedSales({params:{currentPage:$scope.currentPage, pageSize:$scope.pageSize}}).then(function(rs){
+                        console.log(rs);
+                        if(rs.success){
+                            $scope.getCurrentPage(rs);
+                        }
+                    });
+                }
+            }
+        };
 
     }];
 });

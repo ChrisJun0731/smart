@@ -1,8 +1,8 @@
 define(['app'], function(app){
     app.factory('AccountService', function($http) {
         var accountService = {
-            loadAccounts : function() {
-                var promise = $http.get('/account/list').then(function (response) {
+            loadAccounts : function(config) {
+                var promise = $http.get('/account/list', config).then(function (response) {
                     return response.data;
                 });
                 return promise;
@@ -13,8 +13,8 @@ define(['app'], function(app){
                 });
                 return promise;
             },
-            loadCompanys : function() {
-                var promise = $http.get('/company/list').then(function (response) {
+            loadCompanys : function(config) {
+                var promise = $http.get('/company/list', config).then(function (response) {
                     return response.data;
                 });
                 return promise;
@@ -76,7 +76,7 @@ define(['app'], function(app){
                 return promise;
             },
             loadMoreAccounts: function(config){
-                var promise = $http.get('/account/loadMore',config).then(function(response){
+                var promise = $http.get('/account/loadMore', config).then(function(response){
                     return response.data;
                 });
                 return promise;

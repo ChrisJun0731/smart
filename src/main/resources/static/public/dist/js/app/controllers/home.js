@@ -1,6 +1,6 @@
 define(['jquery','angular','angular-sanitize','markdown','../services/UserService.js'], function () {
 	// controller
-	return ["$scope",'UserService','$uibModal','$sce', '$compile', function ($scope, userService, $uibModal, $sce, $compile) {
+	return ["$scope",'UserService','$uibModal','$sce', '$compile', 'toastr', function ($scope, userService, $uibModal, $sce, $compile, toastr) {
 		// properties
 	    $scope.board = {};
         $scope.topList = [];
@@ -65,21 +65,18 @@ define(['jquery','angular','angular-sanitize','markdown','../services/UserServic
 
         //post message
         $scope.sendMessage =  function(){
-            if($scope.richTextFlag){
-                $scope.messageContent = $scope.richText;
-            }
-            else{
-                var imgStr = '<div>';
-                angular.forEach($scope.dataUrlArr,function(obj){
-                    imgStr += '<img src="' + obj.url + '" ng-click="enlarge($event)"/>';
-                })
-                imgStr += '</div>';
-                $scope.messageContent = '<div>' + $scope.messageContent;
-                $scope.messageContent += imgStr + '</div>';
-            }
+            var imgStr = '<div>';
+            angular.forEach($scope.dataUrlArr,function(obj){
+                imgStr += '<img src="' + obj.url + '" ng-click="enlarge($event)"/>';
+            })
+            imgStr += '</div>';
+            $scope.messageContent = '<div>' + $scope.messageContent;
+            $scope.messageContent += imgStr + '</div>';
+
             userService.postMessage({"boardId":$scope.board.id,"messageContent":$scope.messageContent,"messageType":$scope.messageType}).then(function(rs){
                 $scope.messageContent = "";
                 $scope.closePhotoTip();
+                toastr.success("the message has been send!", "Success");
             });
         };
         //var unbindHandler =
@@ -186,10 +183,14 @@ define(['jquery','angular','angular-sanitize','markdown','../services/UserServic
         //add by zj 17/03/02
         //edit rich text modal
         $scope.openRichTextEditor = function(){
-            $uibModal.open({
+            var modalInstance = $uibModal.open({
                 templateUrl: 'richTextEditor.html',
                 controller: richTextController,
                 scope: $scope
+            });
+            modalInstance.result.then(function(rs){
+                $scope.messageContent = rs.data;
+                $scope.sendMessage();
             });
         }
         var richTextController = function($scope, $sce, $uibModalInstance){
@@ -201,12 +202,34 @@ define(['jquery','angular','angular-sanitize','markdown','../services/UserServic
                 $scope.preview = $sce.trustAsHtml(markHtml);
             }
             $scope.send = function(){
-                $scope.$parent.richTextFlag = true;
-                $scope.$parent.richText = markHtml;
-                $scope.$parent.sendMessage();
-                $scope.$parent.richTextFlag = false;
-                $uibModalInstance.dismiss('close');
+                var messageContent;
+                if(markHtml == undefined){
+                    messageContent = markdown.toHTML($scope.richText.content);
+                }
+                else{
+                    messageContent = markHtml;
+                }
+                $uibModalInstance.close({data:messageContent});
             }
-        }
+        };
+
+        $scope.loadMore = function(boardId, size){
+            var config = {params:{boardId:boardId, size:size}};
+            userService.loadMore(config).then(function(rs){
+                if(rs.success){
+                    $scope.messageList = rs.data;
+                    angular.forEach($scope.messageList, function(msg, index){
+                        if(msg.messageType != "note"){
+                            msg.content = JSON.parse(msg.content);
+                        }
+                    });
+                    toastr.success("load more activity success!","Success");
+                }
+                else{
+                    toastr.error("occur an error during load more activity", "Error");
+                }
+            });
+        };
+
 	}];
 });

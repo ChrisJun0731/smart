@@ -24,7 +24,7 @@
 
                                 <div class="box-tools pull-right">
                                     <div class="btn-group">
-                                        <input type="text" class="form-control input-sm" placeholder="Search Accounts">
+                                        <input type="text" ng-model="match.account" ng-keyup="fuzzySearchAccount($event)" class="form-control input-sm" placeholder="Search Accounts">
                                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
                                     </div>
                                     <div class="btn-group" uib-dropdown>
@@ -118,7 +118,7 @@
 
                                 <div class="box-tools pull-right">
                                     <div class="btn-group">
-                                        <input type="text" class="form-control input-sm" placeholder="Search Company">
+                                        <input type="text" ng-model="match.company" ng-keyup="fuzzyCompanyQuery($event)" class="form-control input-sm" placeholder="Search Company">
                                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
                                     </div>
                                     <div class="btn-group" uib-dropdown>

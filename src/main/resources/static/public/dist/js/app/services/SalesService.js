@@ -42,6 +42,12 @@ define(['app'], function(app){
                     return response.data;
                 });
                 return promise;
+            },
+            searchSales: function(config){
+                var promise = $http.get('/sale/search', config).then(function(response){
+                    return response.data;
+                });
+                return promise;
             }
         };
         return salesService;
