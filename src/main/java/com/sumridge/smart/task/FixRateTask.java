@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,9 @@ public class FixRateTask {
 
     @Autowired
     private ActivityInfoRepository activityInfoRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Scheduled(fixedRate = 60000)
     public void reportCurrentTime() {

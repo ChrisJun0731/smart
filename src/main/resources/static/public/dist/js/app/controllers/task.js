@@ -237,9 +237,9 @@ define(['../services/TaskService.js'], function () {
             	$scope.title = "Add Task";
             	$scope.task = {};
             	var date = new Date();
-            	date.setHours(09);
-            	date.setMinutes(00);
-            	date.setSeconds(00);
+            	date.setHours(9);
+            	date.setMinutes(0);
+            	date.setSeconds(0);
                 $scope.task.alertTime = date;
             }
         };
